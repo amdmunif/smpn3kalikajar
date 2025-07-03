@@ -1,0 +1,42 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Database
+*.sql
+*.sqlite
+
+# Cache
+*.cache
+
+# Session files
+*.sess
+
+# Configuration files
+config.php
+includes/config.php
+includes/db.php
+
+# Build files
+node_modules/
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Deployment files
+setup_database.php
+setup_web_server.sh
+prepare_for_cpanel.php
