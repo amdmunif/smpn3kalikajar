@@ -6,16 +6,40 @@ import { NewsArticle, PageContent } from '../types';
 
 const HomePage: React.FC = () => {
   const [content, setContent] = useState<PageContent>({});
+  const [news, setNews] = useState<NewsArticle[]>([]);
+  const [headmasterPhoto, setHeadmasterPhoto] = useState<string | null>(null);
 
   useEffect(() => {
+    // Fetch content
     fetch('/api/get_content.php')
       .then(res => res.json())
-      .then(data => setContent(data))
+      .then(data => {
+        setContent(data);
+        // After content is loaded, try to fetch teachers to find headmaster's photo
+        if (data.headmaster_name) {
+          fetch('/api/teachers.php')
+            .then(res => res.json())
+            .then(teachers => {
+              const headmaster = teachers.find((t: any) => t.name.toLowerCase() === data.headmaster_name.toLowerCase());
+              if (headmaster && headmaster.photo_url) {
+                setHeadmasterPhoto(headmaster.photo_url);
+              }
+            })
+            .catch(err => console.error('Error fetching teachers for headmaster photo:', err));
+        }
+      })
       .catch(err => console.error('Error fetching content:', err));
+
+    // Fetch news
+    fetch('/api/news.php')
+      .then(res => res.json())
+      .then(data => setNews(data))
+      .catch(err => console.error('Error fetching news:', err));
   }, []);
 
   const heroImageUrl = content.hero_image_url || "https://picsum.photos/seed/hero/1600/900";
-  const welcomeImageUrl = content.welcome_image_url || "https://picsum.photos/id/1005/300/300";
+  // Use headmasterPhoto from teacher table, fallback to content's welcome_image_url
+  const welcomeImageUrl = headmasterPhoto || content.welcome_image_url || "https://picsum.photos/id/1005/300/300";
   const headmasterName = content.headmaster_name || "Kepala Sekolah";
   const welcomeMessage = content.welcome_message || "Selamat datang di sekolah kami.";
 
@@ -113,28 +137,32 @@ const HomePage: React.FC = () => {
             <p className="mt-4 text-lg text-gray-600">Ikuti informasi terkini dari sekolah kami.</p>
           </div>
           <div className="grid gap-8 lg:grid-cols-3">
-            {NEWS_ARTICLES.slice(0, 3).map((article: NewsArticle) => (
+            {news.length > 0 ? news.slice(0, 3).map((article: any) => (
               <div key={article.id} className="flex flex-col rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
-                <div className="flex-shrink-0">
-                  <img className="h-48 w-full object-cover" src={article.imageUrl} alt={article.title} />
-                </div>
+                {article.image_url && (
+                  <div className="flex-shrink-0">
+                    <img className="h-48 w-full object-cover" src={article.image_url} alt={article.title} />
+                  </div>
+                )}
                 <div className="flex-1 bg-white p-6 flex flex-col justify-between">
                   <div className="flex-1">
                     <p className="text-sm font-medium text-brand-lightblue">
-                      <span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">{article.category}</span>
+                      <span className={`inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium ${article.category === 'Pengumuman' ? 'bg-yellow-100 text-yellow-800' : article.category === 'Prestasi' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>{article.category}</span>
                     </p>
-                    <p className="text-xl font-semibold text-gray-900 mt-2">{article.title}</p>
-                    <p className="mt-3 text-base text-gray-500">{article.excerpt}</p>
+                    <p className="text-xl font-semibold text-gray-900 mt-2 line-clamp-2">{article.title}</p>
+                    <p className="mt-3 text-base text-gray-500 line-clamp-3">{article.excerpt}</p>
                   </div>
                   <div className="mt-6 flex items-center justify-between">
                     <div className="flex items-center text-sm text-gray-500">
                       <Calendar className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" />
-                      <p>{article.date}</p>
+                      <p>{new Date(article.date).toLocaleDateString('id-ID')}</p>
                     </div>
                   </div>
                 </div>
               </div>
-            ))}
+            )) : (
+               <div className="col-span-3 text-center text-gray-500 py-8">Belum ada berita.</div>
+            )}
           </div>
           <div className="mt-10 text-center">
             <Link to="/berita" className="inline-flex items-center text-brand-blue hover:text-brand-lightblue font-semibold">

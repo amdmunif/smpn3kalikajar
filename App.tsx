@@ -18,13 +18,12 @@ import PublicServicePage from './pages/PublicServicePage';
 import LoginPage from './pages/admin/LoginPage';
 import AdminLayout from './components/admin/AdminLayout';
 import DashboardPage from './pages/admin/DashboardPage';
-import StudentManagementPage from './pages/admin/StudentManagementPage';
-import TeacherManagementPage from './pages/admin/TeacherManagementPage';
 import ContentManagementPage from './pages/admin/ContentManagementPage';
-import ScheduleManagementPage from './pages/admin/ScheduleManagementPage';
-import GradeManagementPage from './pages/admin/GradeManagementPage';
-import AttendanceManagementPage from './pages/admin/AttendanceManagementPage';
-
+import TeacherManagementPage from './pages/admin/TeacherManagementPage';
+import NewsManagementPage from './pages/admin/NewsManagementPage';
+import GalleryManagementPage from './pages/admin/GalleryManagementPage';
+import PublicServiceManagementPage from './pages/admin/PublicServiceManagementPage';
+import MessageManagementPage from './pages/admin/MessageManagementPage';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -72,11 +71,11 @@ const AdminRoutes = () => (
           <Routes>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/content" element={<ContentManagementPage />} />
-            <Route path="/siswa" element={<StudentManagementPage />} />
             <Route path="/guru" element={<TeacherManagementPage />} />
-            <Route path="/jadwal" element={<ScheduleManagementPage />} />
-            <Route path="/nilai" element={<GradeManagementPage />} />
-            <Route path="/absensi" element={<AttendanceManagementPage />} />
+            <Route path="/berita" element={<NewsManagementPage />} />
+            <Route path="/galeri" element={<GalleryManagementPage />} />
+            <Route path="/layanan" element={<PublicServiceManagementPage />} />
+            <Route path="/pesan" element={<MessageManagementPage />} />
             {/* Fallback to dashboard for any other admin route */}
             <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
           </Routes>

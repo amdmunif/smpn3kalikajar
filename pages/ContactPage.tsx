@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Mail, Phone, MapPin } from 'lucide-react';
 
 const PageHeader: React.FC<{ title: string; subtitle: string }> = ({ title, subtitle }) => (
@@ -12,6 +11,45 @@ const PageHeader: React.FC<{ title: string; subtitle: string }> = ({ title, subt
 );
 
 const ContactPage: React.FC = () => {
+  const [formData, setFormData] = useState({
+    sender_name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{type: 'success' | 'error', message: string} | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    try {
+      const response = await fetch('/api/messages.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setSubmitStatus({ type: 'success', message: 'Pesan Anda berhasil dikirim! Kami akan segera merespons.' });
+        setFormData({ sender_name: '', email: '', subject: '', message: '' });
+      } else {
+        setSubmitStatus({ type: 'error', message: 'Gagal mengirim pesan: ' + result.message });
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setSubmitStatus({ type: 'error', message: 'Terjadi kesalahan pada sistem. Silakan coba lagi nanti.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="bg-brand-background">
       <PageHeader title="Kontak & Lokasi" subtitle="Kami siap membantu. Hubungi kami melalui informasi di bawah ini." />
@@ -52,21 +90,32 @@ const ContactPage: React.FC = () => {
             </div>
             
              <h2 className="text-2xl font-bold text-gray-900 mt-12 mb-6">Kirim Pesan</h2>
-             <form className="space-y-4">
+             {submitStatus && (
+               <div className={`p-4 mb-6 rounded-md ${submitStatus.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
+                 {submitStatus.message}
+               </div>
+             )}
+             <form onSubmit={handleSubmit} className="space-y-4">
                  <div>
-                    <label htmlFor="name" className="sr-only">Nama</label>
-                    <input type="text" name="name" id="name" className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue" placeholder="Nama Anda" />
+                    <label htmlFor="sender_name" className="sr-only">Nama</label>
+                    <input type="text" name="sender_name" id="sender_name" value={formData.sender_name} onChange={handleChange} required className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue" placeholder="Nama Anda" />
                  </div>
                  <div>
                     <label htmlFor="email" className="sr-only">Email</label>
-                    <input type="email" name="email" id="email" className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue" placeholder="Email Anda" />
+                    <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} required className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue" placeholder="Email Anda" />
+                 </div>
+                 <div>
+                    <label htmlFor="subject" className="sr-only">Subjek</label>
+                    <input type="text" name="subject" id="subject" value={formData.subject} onChange={handleChange} required className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue" placeholder="Subjek Pesan" />
                  </div>
                  <div>
                     <label htmlFor="message" className="sr-only">Pesan</label>
-                    <textarea name="message" id="message" rows={4} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue" placeholder="Pesan Anda"></textarea>
+                    <textarea name="message" id="message" value={formData.message} onChange={handleChange} required rows={4} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue" placeholder="Pesan Anda"></textarea>
                  </div>
                  <div>
-                    <button type="submit" className="w-full bg-brand-blue text-white py-3 px-6 rounded-md hover:bg-brand-lightblue transition-colors duration-300">Kirim Pesan</button>
+                    <button type="submit" disabled={isSubmitting} className="w-full bg-brand-blue text-white py-3 px-6 rounded-md hover:bg-brand-lightblue transition-colors duration-300 disabled:bg-gray-400">
+                      {isSubmitting ? 'Mengirim...' : 'Kirim Pesan'}
+                    </button>
                  </div>
              </form>
           </div>

@@ -58,6 +58,7 @@ export interface Teacher {
   name: string;
   subject: string;
   phone: string;
+  photo_url?: string;
 }
 
 export interface PageContent {

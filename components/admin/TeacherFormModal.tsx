@@ -10,13 +10,13 @@ interface TeacherFormModalProps {
 }
 
 const TeacherFormModal: React.FC<TeacherFormModalProps> = ({ isOpen, onClose, onSave, teacher }) => {
-  const [formData, setFormData] = useState<Omit<Teacher, 'id'>>({ nip: '', name: '', subject: '', phone: '' });
+  const [formData, setFormData] = useState<Omit<Teacher, 'id'>>({ nip: '', name: '', subject: '', phone: '', photo_url: '' });
 
   useEffect(() => {
     if (teacher) {
-      setFormData({ nip: teacher.nip, name: teacher.name, subject: teacher.subject, phone: teacher.phone });
+      setFormData({ nip: teacher.nip, name: teacher.name, subject: teacher.subject, phone: teacher.phone, photo_url: teacher.photo_url || '' });
     } else {
-      setFormData({ nip: '', name: '', subject: '', phone: '' });
+      setFormData({ nip: '', name: '', subject: '', phone: '', photo_url: '' });
     }
   }, [teacher, isOpen]);
 
@@ -52,12 +52,17 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({ isOpen, onClose, on
               <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" />
             </div>
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Mata Pelajaran</label>
+              <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Mata Pelajaran (Jabatan)</label>
               <input type="text" name="subject" id="subject" value={formData.subject} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" />
             </div>
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Nomor Telepon</label>
               <input type="tel" name="phone" id="phone" value={formData.phone} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" />
+            </div>
+            <div>
+              <label htmlFor="photo_url" className="block text-sm font-medium text-gray-700">URL Foto (Opsional)</label>
+              <input type="url" name="photo_url" id="photo_url" value={formData.photo_url || ''} onChange={handleChange} placeholder="https://contoh.com/foto.jpg" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" />
+              <p className="text-xs text-gray-500 mt-1">Gunakan link gambar (JPG/PNG). Kosongkan jika tidak ada.</p>
             </div>
           </div>
           <div className="mt-8 flex justify-end space-x-3">

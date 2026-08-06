@@ -14,7 +14,7 @@ const TeacherManagementPage: React.FC = () => {
 
   const fetchTeachers = async () => {
     try {
-      const response = await fetch('/api/get_teachers.php');
+      const response = await fetch('/api/teachers.php');
       const data = await response.json();
       setTeachers(data);
     } catch (error) {
@@ -35,7 +35,7 @@ const TeacherManagementPage: React.FC = () => {
   const handleSaveTeacher = async (teacherData: Teacher) => {
     try {
       if (teacherData.id) { // Update
-        const response = await fetch('/api/update_teacher.php', {
+        const response = await fetch('/api/teachers.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(teacherData),
@@ -48,7 +48,7 @@ const TeacherManagementPage: React.FC = () => {
           alert('Gagal: ' + result.message);
         }
       } else { // Create
-        const response = await fetch('/api/create_teacher.php', {
+        const response = await fetch('/api/teachers.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(teacherData),
@@ -71,7 +71,7 @@ const TeacherManagementPage: React.FC = () => {
   const handleDeleteTeacher = async (id: number) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus data guru ini?')) {
       try {
-        const response = await fetch(`/api/delete_teacher.php?id=${id}`);
+        const response = await fetch(`/api/teachers.php?id=${id}`, { method: 'DELETE' });
         const result = await response.json();
         if (result.success) {
           alert('Data guru berhasil dihapus!');
@@ -101,9 +101,10 @@ const TeacherManagementPage: React.FC = () => {
             <table className="min-w-full text-sm text-left text-gray-700">
               <thead className="bg-gray-50 text-xs text-gray-700 uppercase tracking-wider">
                 <tr>
+                  <th scope="col" className="px-6 py-3">Foto</th>
                   <th scope="col" className="px-6 py-3">NIP</th>
                   <th scope="col" className="px-6 py-3">Nama Lengkap</th>
-                  <th scope="col" className="px-6 py-3">Mata Pelajaran</th>
+                  <th scope="col" className="px-6 py-3">Jabatan</th>
                   <th scope="col" className="px-6 py-3">Telepon</th>
                   <th scope="col" className="px-6 py-3 text-center">Aksi</th>
                 </tr>
@@ -111,6 +112,15 @@ const TeacherManagementPage: React.FC = () => {
               <tbody>
                 {teachers.map((teacher: Teacher) => (
                   <tr key={teacher.id} className="bg-white border-b hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      {teacher.photo_url ? (
+                        <img src={teacher.photo_url} alt={teacher.name} className="h-10 w-10 rounded-full object-cover border border-gray-200" />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">
+                          {teacher.name.charAt(0)}
+                        </div>
+                      )}
+                    </td>
                     <td className="px-6 py-4 font-medium text-gray-900">{teacher.nip}</td>
                     <td className="px-6 py-4">{teacher.name}</td>
                     <td className="px-6 py-4">{teacher.subject}</td>

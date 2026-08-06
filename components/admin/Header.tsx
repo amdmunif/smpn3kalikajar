@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { User, ChevronDown, LogOut } from 'lucide-react';
+import { User, ChevronDown, LogOut, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  toggleSidebar: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { logout, user } = useAuth();
   const navigate = useNavigate();
@@ -15,16 +19,26 @@ const Header: React.FC = () => {
   
   const getRoleName = (role: string | undefined) => {
     switch (role) {
-      case 'admin': return 'Admin';
-      case 'guru_bk': return 'Guru BK';
-      case 'ketua_kelas': return 'Ketua Kelas';
+      case 'admin': return 'Admin Utama';
+      case 'guru_bk': return 'Guru';
       default: return 'User';
     }
   };
 
   return (
-    <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-end px-6">
-      <div className="relative">
+    <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 z-10 relative shadow-sm">
+      <button
+        onClick={toggleSidebar}
+        className="p-2 mr-4 text-gray-600 rounded-md hover:bg-gray-100 focus:outline-none focus:bg-gray-100 md:hidden transition-colors"
+        aria-label="Toggle sidebar"
+      >
+        <Menu className="h-6 w-6" />
+      </button>
+
+      {/* Spacer for desktop to keep user menu on the right */}
+      <div className="hidden md:block flex-1"></div>
+
+      <div className="relative flex-1 md:flex-none flex justify-end">
         <button 
           onClick={() => setDropdownOpen(!dropdownOpen)} 
           className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100"
