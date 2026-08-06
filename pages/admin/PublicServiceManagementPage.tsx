@@ -13,6 +13,7 @@ interface PublicService {
 const PublicServiceManagementPage: React.FC = () => {
   const [services, setServices] = useState<PublicService[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<PublicService | null>(null);
   const [formData, setFormData] = useState<Omit<PublicService, 'id'>>({ name: '', description: '', icon_url: '' });
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);

@@ -179,7 +179,7 @@ const ContentManagementPage: React.FC = () => {
   ] as const;
 
   return (
-    <div className="animate-in fade-in duration-500 pb-10 max-w-6xl mx-auto">
+    <div className="animate-in fade-in duration-500 pb-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Manajemen Konten Profil</h1>
         <p className="text-gray-500 mt-2 text-lg">Konfigurasi seluruh teks, gambar utama, dan identitas website sekolah.</p>
