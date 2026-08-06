@@ -30,6 +30,8 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
+        protocol: ftps
+        port: 21
         local-dir: ./dist/
         # You may need to change server-dir if deploying to a subdirectory
         server-dir: ./ 
@@ -40,5 +42,7 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
+        protocol: ftps
+        port: 21
         local-dir: ./api/
         server-dir: ./api/
