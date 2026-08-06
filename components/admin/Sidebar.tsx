@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Users, FileText, Image as ImageIcon, Briefcase, Mail, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -21,6 +21,21 @@ const allNavLinks = [
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const { user } = useAuth();
   const userRole = user?.role;
+  const [schoolName, setSchoolName] = useState('PANEL ADMIN');
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const response = await fetch('/api/get_content.php');
+        const data = await response.json();
+        // Fallback to title or fixed name if not present
+        setSchoolName(data.headmaster_name ? 'Admin SMPN 3' : 'PANEL ADMIN');
+      } catch (error) {
+        console.error('Error fetching site info:', error);
+      }
+    };
+    fetchContent();
+  }, []);
 
   const activeClassName = "bg-gray-700 text-white";
   const inactiveClassName = "text-gray-300 hover:bg-gray-700 hover:text-white";
@@ -32,8 +47,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       fixed inset-y-0 left-0 z-30 w-64 bg-gray-800 text-white flex-col transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0
       ${isOpen ? 'translate-x-0' : '-translate-x-full'}
     `}>
-      <div className="h-20 flex items-center justify-between px-4 bg-gray-900">
-        <h1 className="text-xl font-bold tracking-wider">PANEL ADMIN</h1>
+      <div className="h-20 flex items-center justify-between px-4 bg-gray-900 border-b border-gray-800">
+        <h1 className="text-lg font-bold tracking-wide truncate max-w-[200px]" title={schoolName}>{schoolName}</h1>
         <button 
           onClick={() => setIsOpen(false)}
           className="p-1 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 md:hidden"

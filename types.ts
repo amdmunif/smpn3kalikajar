@@ -54,11 +54,19 @@ export interface Student {
 
 export interface Teacher {
   id: number;
-  nip: string;
+  nip?: string;
   name: string;
+  position: string;
   subject: string;
   phone: string;
   photo_url?: string;
+}
+
+export interface ExternalService {
+  id: number;
+  name: string;
+  url: string;
+  icon_url: string;
 }
 
 export interface PageContent {

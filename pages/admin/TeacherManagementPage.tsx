@@ -96,9 +96,14 @@ const TeacherManagementPage: React.FC = () => {
       ),
       className: 'w-16'
     },
-    { header: 'NIP', accessor: 'nip', className: 'font-medium text-gray-900' },
+    { 
+      header: 'NIP', 
+      accessor: (row: Teacher) => row.nip || '-', 
+      className: 'font-medium text-gray-900' 
+    },
     { header: 'Nama Lengkap', accessor: 'name' },
-    { header: 'Jabatan', accessor: 'subject' },
+    { header: 'Jabatan', accessor: 'position' },
+    { header: 'Mata Pelajaran', accessor: 'subject' },
     { header: 'Telepon', accessor: 'phone' },
     {
       header: 'Aksi',

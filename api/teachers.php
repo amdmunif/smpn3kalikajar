@@ -7,7 +7,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        $sql = "SELECT id, nip, name, subject, phone, photo_url FROM teachers ORDER BY id DESC";
+        $sql = "SELECT id, nip, name, position, subject, phone, photo_url FROM teachers ORDER BY id DESC";
         $result = $conn->query($sql);
         $teachers = array();
         if ($result->num_rows > 0) {
@@ -36,17 +36,18 @@ switch ($method) {
             break;
         }
 
-        if(isset($data->nip) && isset($data->name) && isset($data->subject) && isset($data->phone)) {
-            $nip = $conn->real_escape_string($data->nip);
+        if(isset($data->name) && isset($data->position) && isset($data->subject)) {
+            $nip = isset($data->nip) ? $conn->real_escape_string($data->nip) : '';
             $name = $conn->real_escape_string($data->name);
+            $position = $conn->real_escape_string($data->position);
             $subject = $conn->real_escape_string($data->subject);
-            $phone = $conn->real_escape_string($data->phone);
+            $phone = isset($data->phone) ? $conn->real_escape_string($data->phone) : '';
             $photo_url = isset($data->photo_url) ? $conn->real_escape_string($data->photo_url) : '';
 
             if (isset($data->id)) {
                 // Update
                 $id = (int)$data->id;
-                $sql = "UPDATE teachers SET nip='$nip', name='$name', subject='$subject', phone='$phone', photo_url='$photo_url' WHERE id=$id";
+                $sql = "UPDATE teachers SET nip='$nip', name='$name', position='$position', subject='$subject', phone='$phone', photo_url='$photo_url' WHERE id=$id";
                 if ($conn->query($sql) === TRUE) {
                     echo json_encode(array("success" => true, "message" => "Data guru berhasil diperbarui", "data" => $data));
                 } else {
@@ -54,7 +55,7 @@ switch ($method) {
                 }
             } else {
                 // Create
-                $sql = "INSERT INTO teachers (nip, name, subject, phone, photo_url) VALUES ('$nip', '$name', '$subject', '$phone', '$photo_url')";
+                $sql = "INSERT INTO teachers (nip, name, position, subject, phone, photo_url) VALUES ('$nip', '$name', '$position', '$subject', '$phone', '$photo_url')";
                 if ($conn->query($sql) === TRUE) {
                     $data->id = $conn->insert_id;
                     echo json_encode(array("success" => true, "message" => "Guru berhasil ditambahkan", "data" => $data));

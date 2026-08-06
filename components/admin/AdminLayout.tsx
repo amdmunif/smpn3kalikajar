@@ -20,7 +20,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Header toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-          <div className="container mx-auto px-4 sm:px-6 py-8">
+          <div className="w-full h-full px-4 sm:px-6 py-8">
             {children}
           </div>
         </main>

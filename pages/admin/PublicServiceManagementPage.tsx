@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Briefcase } from 'lucide-react';
+import { Plus, Edit, Trash2, Briefcase, Upload, X, Loader } from 'lucide-react';
 import DataTable, { Column } from '../../components/ui/DataTable';
 import Modal from '../../components/ui/Modal';
 
@@ -13,8 +13,9 @@ interface PublicService {
 const PublicServiceManagementPage: React.FC = () => {
   const [services, setServices] = useState<PublicService[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<PublicService | null>(null);
   const [formData, setFormData] = useState<Omit<PublicService, 'id'>>({ name: '', description: '', icon_url: '' });
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchServices();
@@ -37,6 +38,7 @@ const PublicServiceManagementPage: React.FC = () => {
     } else {
       setFormData({ name: '', description: '', icon_url: '' });
     }
+    setIsUploading(false);
     setIsModalOpen(true);
   };
 
@@ -48,6 +50,33 @@ const PublicServiceManagementPage: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const form = new FormData();
+    form.append('file', file);
+
+    try {
+      const response = await fetch('/api/upload.php', {
+        method: 'POST',
+        body: form,
+      });
+      const data = await response.json();
+      if (data.success) {
+        setFormData(prev => ({ ...prev, icon_url: data.url }));
+      } else {
+        alert('Upload gagal: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      alert('Terjadi kesalahan saat upload gambar.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -189,16 +218,44 @@ const PublicServiceManagementPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">URL Ikon / Gambar (Opsional)</label>
-            <input 
-              type="url" 
-              name="icon_url" 
-              value={formData.icon_url} 
-              onChange={handleChange} 
-              placeholder="https://contoh.com/ikon.png" 
-              className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all" 
-            />
-            <p className="text-xs text-gray-500 mt-2">Gunakan link ikon atau gambar ilustrasi berukuran kecil.</p>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Ikon / Gambar <span className="text-gray-400 font-normal">(Opsional)</span></label>
+            <div className="mt-1 flex items-center space-x-4">
+              {formData.icon_url ? (
+                <div className="relative h-16 w-16 rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-gray-50 flex items-center justify-center">
+                  <img src={formData.icon_url} alt="Preview" className="h-full w-full object-contain p-2" />
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, icon_url: '' }))}
+                    className="absolute top-0 right-0 bg-red-500 text-white p-0.5 rounded-bl hover:bg-red-600 transition-colors"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ) : (
+                <div className="h-16 w-16 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 text-gray-400">
+                  <Briefcase className="h-6 w-6" />
+                </div>
+              )}
+              <div className="flex-1">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="px-4 py-2 text-sm font-medium text-brand-blue bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 transition-colors flex items-center disabled:opacity-50"
+                >
+                  {isUploading ? <Loader className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
+                  {isUploading ? 'Mengunggah...' : 'Pilih Ikon/Logo'}
+                </button>
+                <p className="text-xs text-gray-500 mt-2">Gunakan format PNG transparan atau JPG berukuran kecil.</p>
+              </div>
+            </div>
           </div>
 
           <div className="pt-5 border-t border-gray-100 flex justify-end space-x-3">
@@ -211,7 +268,8 @@ const PublicServiceManagementPage: React.FC = () => {
             </button>
             <button 
               type="submit" 
-              className="px-5 py-2.5 text-sm font-medium text-white bg-brand-blue rounded-lg hover:bg-brand-lightblue shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/50 transition-colors"
+              disabled={isUploading}
+              className="px-5 py-2.5 text-sm font-medium text-white bg-brand-blue rounded-lg hover:bg-brand-lightblue shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/50 transition-colors disabled:opacity-50"
             >
               Simpan Layanan
             </button>

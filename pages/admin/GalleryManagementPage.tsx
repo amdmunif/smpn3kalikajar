@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Image as ImageIcon } from 'lucide-react';
+import { Plus, Trash2, Image as ImageIcon, Upload, X, Loader } from 'lucide-react';
 import DataTable, { Column } from '../../components/ui/DataTable';
 import Modal from '../../components/ui/Modal';
 
@@ -13,6 +13,8 @@ const GalleryManagementPage: React.FC = () => {
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<Omit<GalleryItem, 'id'>>({ image_url: '', caption: '' });
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchGallery();
@@ -30,6 +32,7 @@ const GalleryManagementPage: React.FC = () => {
 
   const handleOpenModal = () => {
     setFormData({ image_url: '', caption: '' });
+    setIsUploading(false);
     setIsModalOpen(true);
   };
 
@@ -40,6 +43,33 @@ const GalleryManagementPage: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const form = new FormData();
+    form.append('file', file);
+
+    try {
+      const response = await fetch('/api/upload.php', {
+        method: 'POST',
+        body: form,
+      });
+      const data = await response.json();
+      if (data.success) {
+        setFormData(prev => ({ ...prev, image_url: data.url }));
+      } else {
+        alert('Upload gagal: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      alert('Terjadi kesalahan saat upload gambar.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -148,17 +178,36 @@ const GalleryManagementPage: React.FC = () => {
       >
         <form onSubmit={handleSave} className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">URL Gambar</label>
-            <input 
-              type="url" 
-              name="image_url" 
-              value={formData.image_url} 
-              onChange={handleChange} 
-              required 
-              placeholder="https://contoh.com/foto.jpg" 
-              className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all" 
-            />
-            <p className="text-xs text-gray-500 mt-2">Masukkan link gambar langsung berformat JPG/PNG.</p>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Foto Galeri</label>
+            <div className="mt-1">
+              {formData.image_url ? (
+                <div className="relative rounded-xl overflow-hidden border border-gray-200 shadow-sm max-w-sm">
+                  <img src={formData.image_url} alt="Preview" className="w-full h-auto object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, image_url: '' }))}
+                    className="absolute top-0 right-0 bg-red-500 text-white p-2 rounded-bl-lg hover:bg-red-600 transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full h-40 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center bg-gray-50 text-gray-400 cursor-pointer hover:bg-blue-50 hover:border-brand-blue hover:text-brand-blue transition-colors"
+                >
+                  {isUploading ? <Loader className="h-8 w-8 mb-2 animate-spin" /> : <Upload className="h-8 w-8 mb-2" />}
+                  <span className="text-sm font-medium">{isUploading ? 'Mengunggah...' : 'Klik untuk memilih foto'}</span>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+              />
+            </div>
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Keterangan / Caption</label>
@@ -173,20 +222,6 @@ const GalleryManagementPage: React.FC = () => {
             />
           </div>
 
-          {formData.image_url && (
-            <div className="mt-4 p-4 bg-gray-50 border border-gray-100 rounded-lg">
-              <p className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wider">Pratinjau Gambar</p>
-              <div className="flex justify-center">
-                <img 
-                  src={formData.image_url} 
-                  alt="Pratinjau" 
-                  className="max-h-48 w-auto rounded shadow-sm border border-gray-200" 
-                  onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/400x300?text=Gambar+Tidak+Valid')} 
-                />
-              </div>
-            </div>
-          )}
-
           <div className="pt-5 border-t border-gray-100 flex justify-end space-x-3">
             <button 
               type="button" 
@@ -197,9 +232,10 @@ const GalleryManagementPage: React.FC = () => {
             </button>
             <button 
               type="submit" 
-              className="px-5 py-2.5 text-sm font-medium text-white bg-brand-blue rounded-lg hover:bg-brand-lightblue shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/50 transition-colors"
+              disabled={isUploading || !formData.image_url}
+              className="px-5 py-2.5 text-sm font-medium text-white bg-brand-blue rounded-lg hover:bg-brand-lightblue shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/50 transition-colors disabled:opacity-50"
             >
-              Upload Gambar
+              Simpan Data
             </button>
           </div>
         </form>

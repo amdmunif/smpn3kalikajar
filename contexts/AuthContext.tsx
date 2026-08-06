@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { User } from '../types';
 
 interface AuthContextType {
@@ -12,16 +12,34 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check local storage for existing session
+    const storedUser = localStorage.getItem('smpn3_admin_user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        localStorage.removeItem('smpn3_admin_user');
+      }
+    }
+    setLoading(false);
+  }, []);
 
   const login = (userData: User) => {
-    // In a real app, you would save this to localStorage to persist login
     setUser(userData);
+    localStorage.setItem('smpn3_admin_user', JSON.stringify(userData));
   };
 
   const logout = () => {
-    // And clear it from localStorage
     setUser(null);
+    localStorage.removeItem('smpn3_admin_user');
   };
+
+  if (loading) {
+    return <div className="h-screen w-screen flex items-center justify-center bg-gray-50">Loading...</div>;
+  }
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
