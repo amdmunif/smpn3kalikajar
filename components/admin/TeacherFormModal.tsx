@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Teacher } from '../../types';
-import { X } from 'lucide-react';
+import Modal from '../ui/Modal';
 
 interface TeacherFormModalProps {
   isOpen: boolean;
@@ -30,48 +30,97 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({ isOpen, onClose, on
     onSave({ ...formData, id: teacher?.id || 0 });
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">{teacher ? 'Edit Data Guru' : 'Tambah Guru Baru'}</h2>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-200">
-            <X className="h-6 w-6 text-gray-600" />
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={teacher ? 'Edit Data Guru' : 'Tambah Guru Baru'}
+      maxWidth="max-w-lg"
+    >
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label htmlFor="nip" className="block text-sm font-semibold text-gray-700 mb-1">NIP</label>
+          <input 
+            type="text" 
+            name="nip" 
+            id="nip" 
+            value={formData.nip} 
+            onChange={handleChange} 
+            required 
+            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all" 
+            placeholder="Masukkan NIP"
+          />
+        </div>
+        <div>
+          <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
+          <input 
+            type="text" 
+            name="name" 
+            id="name" 
+            value={formData.name} 
+            onChange={handleChange} 
+            required 
+            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all" 
+            placeholder="Masukkan Nama Lengkap"
+          />
+        </div>
+        <div>
+          <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 mb-1">Mata Pelajaran / Jabatan</label>
+          <input 
+            type="text" 
+            name="subject" 
+            id="subject" 
+            value={formData.subject} 
+            onChange={handleChange} 
+            required 
+            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all" 
+            placeholder="Contoh: Guru Matematika"
+          />
+        </div>
+        <div>
+          <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-1">Nomor Telepon</label>
+          <input 
+            type="tel" 
+            name="phone" 
+            id="phone" 
+            value={formData.phone} 
+            onChange={handleChange} 
+            required 
+            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all" 
+            placeholder="08123456789"
+          />
+        </div>
+        <div>
+          <label htmlFor="photo_url" className="block text-sm font-semibold text-gray-700 mb-1">URL Foto (Opsional)</label>
+          <input 
+            type="url" 
+            name="photo_url" 
+            id="photo_url" 
+            value={formData.photo_url || ''} 
+            onChange={handleChange} 
+            placeholder="https://contoh.com/foto.jpg" 
+            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all" 
+          />
+          <p className="text-xs text-gray-500 mt-2">Gunakan link gambar langsung (.jpg atau .png). Kosongkan jika tidak ada foto.</p>
+        </div>
+        
+        <div className="pt-4 flex justify-end space-x-3 border-t border-gray-100">
+          <button 
+            type="button" 
+            onClick={onClose} 
+            className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors"
+          >
+            Batal
+          </button>
+          <button 
+            type="submit" 
+            className="px-5 py-2.5 text-sm font-medium text-white bg-brand-blue rounded-lg hover:bg-brand-lightblue shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/50 transition-colors"
+          >
+            Simpan Data
           </button>
         </div>
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="nip" className="block text-sm font-medium text-gray-700">NIP</label>
-              <input type="text" name="nip" id="nip" value={formData.nip} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" />
-            </div>
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nama Lengkap</label>
-              <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" />
-            </div>
-            <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Mata Pelajaran (Jabatan)</label>
-              <input type="text" name="subject" id="subject" value={formData.subject} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" />
-            </div>
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Nomor Telepon</label>
-              <input type="tel" name="phone" id="phone" value={formData.phone} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" />
-            </div>
-            <div>
-              <label htmlFor="photo_url" className="block text-sm font-medium text-gray-700">URL Foto (Opsional)</label>
-              <input type="url" name="photo_url" id="photo_url" value={formData.photo_url || ''} onChange={handleChange} placeholder="https://contoh.com/foto.jpg" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" />
-              <p className="text-xs text-gray-500 mt-1">Gunakan link gambar (JPG/PNG). Kosongkan jika tidak ada.</p>
-            </div>
-          </div>
-          <div className="mt-8 flex justify-end space-x-3">
-            <button type="button" onClick={onClose} className="bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300">Batal</button>
-            <button type="submit" className="bg-brand-blue text-white py-2 px-4 rounded-md hover:bg-brand-lightblue">Simpan</button>
-          </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </Modal>
   );
 };
 

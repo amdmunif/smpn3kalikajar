@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, Settings, Image as ImageIcon, Briefcase, Mail, X } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Image as ImageIcon, Briefcase, Mail, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface SidebarProps {
@@ -57,22 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             {link.name}
           </NavLink>
         ))}
-        {userRole === 'admin' && (
-          <div className="mt-6 pt-4 border-t border-gray-700">
-             <NavLink
-                to="/admin/settings"
-                onClick={() => setIsOpen(false)}
-                className={({ isActive }) =>
-                  `flex items-center px-4 py-2.5 rounded-lg transition-colors duration-200 text-sm font-medium ${
-                    isActive ? activeClassName : inactiveClassName
-                  }`
-                }
-              >
-                <Settings className="h-5 w-5 mr-3" />
-                Pengaturan
-              </NavLink>
-          </div>
-        )}
+
       </nav>
     </div>
   );

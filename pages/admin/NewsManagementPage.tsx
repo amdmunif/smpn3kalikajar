@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, X, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit, Trash2, Image as ImageIcon } from 'lucide-react';
+import { Editor } from '@tinymce/tinymce-react';
+import DataTable, { Column } from '../../components/ui/DataTable';
+import Modal from '../../components/ui/Modal';
 
 interface NewsArticle {
   id: number;
@@ -80,7 +83,6 @@ const NewsManagementPage: React.FC = () => {
       });
       const result = await response.json();
       if (result.success) {
-        alert(`Berita berhasil ${selectedNews ? 'diperbarui' : 'ditambahkan'}!`);
         fetchNews();
       } else {
         alert('Gagal: ' + result.message);
@@ -98,7 +100,6 @@ const NewsManagementPage: React.FC = () => {
         const response = await fetch(`/api/news.php?id=${id}`, { method: 'DELETE' });
         const result = await response.json();
         if (result.success) {
-          alert('Berita berhasil dihapus!');
           fetchNews();
         } else {
           alert('Gagal: ' + result.message);
@@ -109,116 +110,190 @@ const NewsManagementPage: React.FC = () => {
     }
   };
 
+  const columns: Column<NewsArticle>[] = [
+    {
+      header: 'Gambar',
+      accessor: (item) => item.image_url ? (
+        <img src={item.image_url} alt={item.title} className="h-12 w-16 object-cover rounded shadow-sm border border-gray-100" />
+      ) : (
+        <div className="h-12 w-16 bg-gray-100 rounded flex items-center justify-center text-gray-400 shadow-sm">
+          <ImageIcon className="h-6 w-6 opacity-50" />
+        </div>
+      ),
+      className: 'w-24'
+    },
+    { 
+      header: 'Judul', 
+      accessor: (item) => (
+        <div className="font-medium text-gray-900 max-w-xs truncate" title={item.title}>
+          {item.title}
+        </div>
+      )
+    },
+    {
+      header: 'Kategori',
+      accessor: (item) => (
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.category === 'Pengumuman' ? 'bg-amber-100 text-amber-800' : item.category === 'Prestasi' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}`}>
+          {item.category}
+        </span>
+      )
+    },
+    { 
+      header: 'Tanggal', 
+      accessor: (item) => new Date(item.date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) 
+    },
+    {
+      header: 'Aksi',
+      accessor: (item) => (
+        <div className="flex space-x-2">
+          <button 
+            onClick={() => handleOpenModal(item)} 
+            className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            title="Edit"
+          >
+            <Edit className="h-4 w-4" />
+          </button>
+          <button 
+            onClick={() => handleDelete(item.id)} 
+            className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/50"
+            title="Hapus"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      ),
+      className: 'w-24 text-center'
+    }
+  ];
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Manajemen Berita & Pengumuman</h1>
-        <button onClick={() => handleOpenModal()} className="flex items-center bg-brand-blue text-white py-2 px-4 rounded-md hover:bg-brand-lightblue transition-colors">
+    <div className="animate-in fade-in duration-500">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Berita & Pengumuman</h1>
+          <p className="text-gray-500 mt-1">Kelola artikel berita, pengumuman, dan prestasi</p>
+        </div>
+        <button 
+          onClick={() => handleOpenModal()} 
+          className="flex items-center px-5 py-2.5 bg-brand-blue text-white rounded-lg shadow-sm hover:bg-brand-lightblue focus:outline-none focus:ring-2 focus:ring-brand-blue/50 transition-all"
+        >
           <Plus className="h-5 w-5 mr-2" />
           Tulis Berita
         </button>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm text-left text-gray-700">
-            <thead className="bg-gray-50 text-xs text-gray-700 uppercase tracking-wider">
-              <tr>
-                <th scope="col" className="px-6 py-3">Gambar</th>
-                <th scope="col" className="px-6 py-3">Judul</th>
-                <th scope="col" className="px-6 py-3">Kategori</th>
-                <th scope="col" className="px-6 py-3">Tanggal</th>
-                <th scope="col" className="px-6 py-3 text-center">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {news.length === 0 ? (
-                <tr><td colSpan={5} className="px-6 py-4 text-center">Belum ada berita.</td></tr>
-              ) : (
-                news.map((item) => (
-                  <tr key={item.id} className="bg-white border-b hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      {item.image_url ? (
-                        <img src={item.image_url} alt={item.title} className="h-12 w-16 object-cover rounded" />
-                      ) : (
-                        <div className="h-12 w-16 bg-gray-200 rounded flex items-center justify-center text-gray-400">
-                          <ImageIcon className="h-6 w-6" />
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 font-medium text-gray-900 line-clamp-2">{item.title}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2 py-1 text-xs rounded-full ${item.category === 'Pengumuman' ? 'bg-yellow-100 text-yellow-800' : item.category === 'Prestasi' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
-                        {item.category}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">{new Date(item.date).toLocaleDateString('id-ID')}</td>
-                    <td className="px-6 py-4 flex justify-center space-x-2">
-                      <button onClick={() => handleOpenModal(item)} className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-full transition-colors">
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => handleDelete(item.id)} className="p-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-full transition-colors">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DataTable
+        columns={columns}
+        data={news}
+        searchPlaceholder="Cari judul, konten, atau kategori..."
+      />
 
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-            <div className="flex justify-between items-center p-6 border-b">
-              <h2 className="text-2xl font-bold text-gray-800">{selectedNews ? 'Edit Berita' : 'Tulis Berita Baru'}</h2>
-              <button onClick={handleCloseModal} className="p-2 rounded-full hover:bg-gray-200">
-                <X className="h-6 w-6 text-gray-600" />
-              </button>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title={selectedNews ? 'Edit Berita' : 'Tulis Berita Baru'}
+        maxWidth="max-w-3xl"
+      >
+        <form id="news-form" onSubmit={handleSave} className="space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Judul Berita</label>
+              <input 
+                type="text" 
+                name="title" 
+                value={formData.title} 
+                onChange={handleChange} 
+                required 
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all"
+              />
             </div>
-            <div className="p-6 overflow-y-auto flex-1">
-              <form id="news-form" onSubmit={handleSave} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="col-span-1 md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700">Judul Berita</label>
-                    <input type="text" name="title" value={formData.title} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Kategori</label>
-                    <select name="category" value={formData.category} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm">
-                      <option value="Berita">Berita</option>
-                      <option value="Pengumuman">Pengumuman</option>
-                      <option value="Prestasi">Prestasi</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Tanggal</label>
-                    <input type="date" name="date" value={formData.date} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" />
-                  </div>
-                  <div className="col-span-1 md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700">URL Gambar Utama</label>
-                    <input type="url" name="image_url" value={formData.image_url} onChange={handleChange} placeholder="https://contoh.com/gambar.jpg" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" />
-                  </div>
-                  <div className="col-span-1 md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700">Kutipan Singkat (Excerpt)</label>
-                    <textarea name="excerpt" value={formData.excerpt} onChange={handleChange} rows={2} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" placeholder="Ringkasan berita (tampil di halaman depan)..." />
-                  </div>
-                  <div className="col-span-1 md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700">Isi Berita Lengkap</label>
-                    <textarea name="content" value={formData.content} onChange={handleChange} rows={6} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" placeholder="Ketik isi berita lengkap di sini..." />
-                  </div>
-                </div>
-              </form>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Kategori</label>
+              <select 
+                name="category" 
+                value={formData.category} 
+                onChange={handleChange} 
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all"
+              >
+                <option value="Berita">Berita</option>
+                <option value="Pengumuman">Pengumuman</option>
+                <option value="Prestasi">Prestasi</option>
+              </select>
             </div>
-            <div className="p-6 border-t bg-gray-50 flex justify-end space-x-3 rounded-b-lg">
-              <button type="button" onClick={handleCloseModal} className="bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300">Batal</button>
-              <button type="submit" form="news-form" className="bg-brand-blue text-white py-2 px-4 rounded-md hover:bg-brand-lightblue">Simpan Berita</button>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Tanggal</label>
+              <input 
+                type="date" 
+                name="date" 
+                value={formData.date} 
+                onChange={handleChange} 
+                required 
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all"
+              />
+            </div>
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">URL Gambar Utama</label>
+              <input 
+                type="url" 
+                name="image_url" 
+                value={formData.image_url} 
+                onChange={handleChange} 
+                placeholder="https://contoh.com/gambar.jpg" 
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all"
+              />
+            </div>
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Kutipan Singkat (Excerpt)</label>
+              <textarea 
+                name="excerpt" 
+                value={formData.excerpt} 
+                onChange={handleChange} 
+                rows={2} 
+                required 
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all" 
+                placeholder="Ringkasan berita (tampil di halaman depan)..." 
+              />
+            </div>
+            <div className="col-span-1 md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Isi Berita Lengkap</label>
+              <div className="border border-gray-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-brand-blue/50 focus-within:border-brand-blue transition-all">
+                <Editor
+                  apiKey="a6av81tpfj54ylxetjioaunho1ja53ana1c28l9jndbsbql3"
+                  value={formData.content}
+                  onEditorChange={(newContent) => {
+                    setFormData(prev => ({ ...prev, content: newContent }));
+                  }}
+                  init={{
+                    height: 400,
+                    menubar: true,
+                    plugins: [
+                      'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount'
+                    ],
+                    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+                    content_style: 'body { font-family:Inter,sans-serif; font-size:14px }'
+                  }}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      )}
+          
+          <div className="pt-5 border-t border-gray-100 flex justify-end space-x-3">
+            <button 
+              type="button" 
+              onClick={handleCloseModal} 
+              className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors"
+            >
+              Batal
+            </button>
+            <button 
+              type="submit" 
+              className="px-5 py-2.5 text-sm font-medium text-white bg-brand-blue rounded-lg hover:bg-brand-lightblue shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/50 transition-colors"
+            >
+              Simpan Berita
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Teacher } from '../../types';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import TeacherFormModal from '../../components/admin/TeacherFormModal';
+import DataTable, { Column } from '../../components/ui/DataTable';
 
 const TeacherManagementPage: React.FC = () => {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -42,7 +43,6 @@ const TeacherManagementPage: React.FC = () => {
         });
         const result = await response.json();
         if (result.success) {
-          alert('Data guru berhasil diperbarui!');
           fetchTeachers();
         } else {
           alert('Gagal: ' + result.message);
@@ -55,7 +55,6 @@ const TeacherManagementPage: React.FC = () => {
         });
         const result = await response.json();
         if (result.success) {
-          alert('Guru baru berhasil ditambahkan!');
           fetchTeachers();
         } else {
           alert('Gagal: ' + result.message);
@@ -74,7 +73,6 @@ const TeacherManagementPage: React.FC = () => {
         const response = await fetch(`/api/teachers.php?id=${id}`, { method: 'DELETE' });
         const result = await response.json();
         if (result.success) {
-          alert('Data guru berhasil dihapus!');
           fetchTeachers();
         } else {
           alert('Gagal: ' + result.message);
@@ -86,59 +84,67 @@ const TeacherManagementPage: React.FC = () => {
     }
   };
 
+  const columns: Column<Teacher>[] = [
+    {
+      header: 'Foto',
+      accessor: (teacher) => teacher.photo_url ? (
+        <img src={teacher.photo_url} alt={teacher.name} className="h-10 w-10 rounded-full object-cover shadow-sm border border-gray-100" />
+      ) : (
+        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-brand-blue font-bold shadow-sm">
+          {teacher.name.charAt(0)}
+        </div>
+      ),
+      className: 'w-16'
+    },
+    { header: 'NIP', accessor: 'nip', className: 'font-medium text-gray-900' },
+    { header: 'Nama Lengkap', accessor: 'name' },
+    { header: 'Jabatan', accessor: 'subject' },
+    { header: 'Telepon', accessor: 'phone' },
+    {
+      header: 'Aksi',
+      accessor: (teacher) => (
+        <div className="flex space-x-2">
+          <button 
+            onClick={() => handleOpenModal(teacher)} 
+            className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            title="Edit"
+          >
+            <Edit className="h-4 w-4" />
+          </button>
+          <button 
+            onClick={() => handleDeleteTeacher(teacher.id)} 
+            className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/50"
+            title="Hapus"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      ),
+      className: 'w-24 text-center'
+    }
+  ];
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Manajemen Data Guru</h1>
-        <button onClick={() => handleOpenModal()} className="flex items-center bg-brand-blue text-white py-2 px-4 rounded-md hover:bg-brand-lightblue transition-colors">
+    <div className="animate-in fade-in duration-500">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Data Guru</h1>
+          <p className="text-gray-500 mt-1">Kelola direktori pendidik dan tenaga kependidikan</p>
+        </div>
+        <button 
+          onClick={() => handleOpenModal()} 
+          className="flex items-center px-5 py-2.5 bg-brand-blue text-white rounded-lg shadow-sm hover:bg-brand-lightblue focus:outline-none focus:ring-2 focus:ring-brand-blue/50 transition-all"
+        >
           <Plus className="h-5 w-5 mr-2" />
           Tambah Guru
         </button>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-            <table className="min-w-full text-sm text-left text-gray-700">
-              <thead className="bg-gray-50 text-xs text-gray-700 uppercase tracking-wider">
-                <tr>
-                  <th scope="col" className="px-6 py-3">Foto</th>
-                  <th scope="col" className="px-6 py-3">NIP</th>
-                  <th scope="col" className="px-6 py-3">Nama Lengkap</th>
-                  <th scope="col" className="px-6 py-3">Jabatan</th>
-                  <th scope="col" className="px-6 py-3">Telepon</th>
-                  <th scope="col" className="px-6 py-3 text-center">Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {teachers.map((teacher: Teacher) => (
-                  <tr key={teacher.id} className="bg-white border-b hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      {teacher.photo_url ? (
-                        <img src={teacher.photo_url} alt={teacher.name} className="h-10 w-10 rounded-full object-cover border border-gray-200" />
-                      ) : (
-                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold">
-                          {teacher.name.charAt(0)}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 font-medium text-gray-900">{teacher.nip}</td>
-                    <td className="px-6 py-4">{teacher.name}</td>
-                    <td className="px-6 py-4">{teacher.subject}</td>
-                    <td className="px-6 py-4">{teacher.phone}</td>
-                    <td className="px-6 py-4 flex justify-center space-x-2">
-                      <button onClick={() => handleOpenModal(teacher)} className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-full transition-colors">
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      <button onClick={() => handleDeleteTeacher(teacher.id)} className="p-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-full transition-colors">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-        </div>
-      </div>
+      <DataTable
+        columns={columns}
+        data={teachers}
+        searchPlaceholder="Cari NIP, nama, atau jabatan..."
+      />
 
       <TeacherFormModal
         isOpen={isModalOpen}

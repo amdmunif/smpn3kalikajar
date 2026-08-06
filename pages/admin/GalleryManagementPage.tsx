@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, X, Image as ImageIcon } from 'lucide-react';
+import { Plus, Trash2, Image as ImageIcon } from 'lucide-react';
+import DataTable, { Column } from '../../components/ui/DataTable';
+import Modal from '../../components/ui/Modal';
 
 interface GalleryItem {
   id: number;
@@ -50,7 +52,6 @@ const GalleryManagementPage: React.FC = () => {
       });
       const result = await response.json();
       if (result.success) {
-        alert('Gambar berhasil ditambahkan ke galeri!');
         fetchGallery();
       } else {
         alert('Gagal: ' + result.message);
@@ -68,7 +69,6 @@ const GalleryManagementPage: React.FC = () => {
         const response = await fetch(`/api/gallery.php?id=${id}`, { method: 'DELETE' });
         const result = await response.json();
         if (result.success) {
-          alert('Gambar berhasil dihapus!');
           fetchGallery();
         } else {
           alert('Gagal: ' + result.message);
@@ -79,75 +79,131 @@ const GalleryManagementPage: React.FC = () => {
     }
   };
 
+  const columns: Column<GalleryItem>[] = [
+    {
+      header: 'Pratinjau Gambar',
+      accessor: (item) => (
+        <div className="relative group overflow-hidden rounded shadow-sm border border-gray-100 h-16 w-24">
+          <img src={item.image_url} alt={item.caption} className="w-full h-full object-cover" />
+        </div>
+      ),
+      className: 'w-32'
+    },
+    { 
+      header: 'Keterangan (Caption)', 
+      accessor: (item) => (
+        <span className="font-medium text-gray-900">{item.caption || <span className="text-gray-400 italic">Tanpa Keterangan</span>}</span>
+      )
+    },
+    { 
+      header: 'URL Gambar', 
+      accessor: (item) => (
+        <a href={item.image_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline max-w-xs truncate block" title={item.image_url}>
+          {item.image_url}
+        </a>
+      )
+    },
+    {
+      header: 'Aksi',
+      accessor: (item) => (
+        <button 
+          onClick={() => handleDelete(item.id)} 
+          className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/50"
+          title="Hapus"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      ),
+      className: 'w-24 text-center'
+    }
+  ];
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Manajemen Galeri Sekolah</h1>
-        <button onClick={handleOpenModal} className="flex items-center bg-brand-blue text-white py-2 px-4 rounded-md hover:bg-brand-lightblue transition-colors">
+    <div className="animate-in fade-in duration-500">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Galeri Sekolah</h1>
+          <p className="text-gray-500 mt-1">Kelola album foto kegiatan dan fasilitas</p>
+        </div>
+        <button 
+          onClick={handleOpenModal} 
+          className="flex items-center px-5 py-2.5 bg-brand-blue text-white rounded-lg shadow-sm hover:bg-brand-lightblue focus:outline-none focus:ring-2 focus:ring-brand-blue/50 transition-all"
+        >
           <Plus className="h-5 w-5 mr-2" />
           Tambah Gambar
         </button>
       </div>
 
-      {gallery.length === 0 ? (
-        <div className="bg-white p-8 text-center rounded-lg shadow-md text-gray-500">
-          Belum ada foto di galeri. Silakan tambah gambar baru.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {gallery.map((item) => (
-            <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden group">
-              <div className="aspect-w-16 aspect-h-12 relative overflow-hidden bg-gray-100">
-                <img src={item.image_url} alt={item.caption} className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-opacity flex items-center justify-center opacity-0 group-hover:opacity-100">
-                  <button onClick={() => handleDelete(item.id)} className="bg-red-600 text-white p-3 rounded-full hover:bg-red-700 transform hover:scale-110 transition-transform shadow-lg" title="Hapus Gambar">
-                    <Trash2 className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-              <div className="p-4">
-                <p className="text-sm font-medium text-gray-800 line-clamp-2">{item.caption || 'Tanpa Keterangan'}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <DataTable
+        columns={columns}
+        data={gallery}
+        searchPlaceholder="Cari caption atau URL..."
+      />
 
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg">
-            <div className="flex justify-between items-center mb-6 border-b pb-4">
-              <h2 className="text-2xl font-bold text-gray-800">Upload ke Galeri</h2>
-              <button onClick={handleCloseModal} className="p-2 rounded-full hover:bg-gray-200">
-                <X className="h-6 w-6 text-gray-600" />
-              </button>
-            </div>
-            <form onSubmit={handleSave} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">URL Gambar</label>
-                <input type="url" name="image_url" value={formData.image_url} onChange={handleChange} required placeholder="https://contoh.com/foto.jpg" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" />
-                <p className="text-xs text-gray-500 mt-1">Masukkan link gambar (JPG/PNG).</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Keterangan / Caption</label>
-                <input type="text" name="caption" value={formData.caption} onChange={handleChange} required placeholder="Contoh: Upacara Kemerdekaan RI" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" />
-              </div>
-
-              {formData.image_url && (
-                <div className="mt-4 border rounded-md p-2 bg-gray-50">
-                  <p className="text-xs text-gray-500 mb-2">Pratinjau Gambar:</p>
-                  <img src={formData.image_url} alt="Pratinjau" className="max-h-48 w-auto mx-auto rounded" onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/400x300?text=Gambar+Tidak+Valid')} />
-                </div>
-              )}
-
-              <div className="mt-8 flex justify-end space-x-3 pt-4 border-t">
-                <button type="button" onClick={handleCloseModal} className="bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300">Batal</button>
-                <button type="submit" className="bg-brand-blue text-white py-2 px-4 rounded-md hover:bg-brand-lightblue">Simpan</button>
-              </div>
-            </form>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title="Upload ke Galeri"
+        maxWidth="max-w-lg"
+      >
+        <form onSubmit={handleSave} className="space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">URL Gambar</label>
+            <input 
+              type="url" 
+              name="image_url" 
+              value={formData.image_url} 
+              onChange={handleChange} 
+              required 
+              placeholder="https://contoh.com/foto.jpg" 
+              className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all" 
+            />
+            <p className="text-xs text-gray-500 mt-2">Masukkan link gambar langsung berformat JPG/PNG.</p>
           </div>
-        </div>
-      )}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Keterangan / Caption</label>
+            <input 
+              type="text" 
+              name="caption" 
+              value={formData.caption} 
+              onChange={handleChange} 
+              required 
+              placeholder="Contoh: Upacara Kemerdekaan RI" 
+              className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all" 
+            />
+          </div>
+
+          {formData.image_url && (
+            <div className="mt-4 p-4 bg-gray-50 border border-gray-100 rounded-lg">
+              <p className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wider">Pratinjau Gambar</p>
+              <div className="flex justify-center">
+                <img 
+                  src={formData.image_url} 
+                  alt="Pratinjau" 
+                  className="max-h-48 w-auto rounded shadow-sm border border-gray-200" 
+                  onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/400x300?text=Gambar+Tidak+Valid')} 
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="pt-5 border-t border-gray-100 flex justify-end space-x-3">
+            <button 
+              type="button" 
+              onClick={handleCloseModal} 
+              className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors"
+            >
+              Batal
+            </button>
+            <button 
+              type="submit" 
+              className="px-5 py-2.5 text-sm font-medium text-white bg-brand-blue rounded-lg hover:bg-brand-lightblue shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/50 transition-colors"
+            >
+              Upload Gambar
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };
