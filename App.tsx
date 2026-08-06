@@ -12,6 +12,7 @@ import ProgramsPage from './pages/ProgramsPage';
 import NewsPage from './pages/NewsPage';
 import GalleryPage from './pages/GalleryPage';
 import ContactPage from './pages/ContactPage';
+import PublicServicePage from './pages/PublicServicePage';
 
 // Admin components
 import LoginPage from './pages/admin/LoginPage';
@@ -54,6 +55,7 @@ const PublicSiteRoutes = () => (
         <Route path="/berita" element={<NewsPage />} />
         <Route path="/galeri" element={<GalleryPage />} />
         <Route path="/kontak" element={<ContactPage />} />
+        <Route path="/layanan" element={<PublicServicePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </main>

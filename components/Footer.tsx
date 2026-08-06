@@ -17,6 +17,7 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-semibold text-brand-secondary">Tautan Cepat</h3>
             <ul className="mt-4 space-y-2">
               <li><Link to="/profil" className="text-sm text-gray-300 hover:text-white">Profil Sekolah</Link></li>
+              <li><Link to="/layanan" className="text-sm text-gray-300 hover:text-white">Layanan Publik</Link></li>
               <li><Link to="/berita" className="text-sm text-gray-300 hover:text-white">Berita & Pengumuman</Link></li>
               <li><Link to="/program" className="text-sm text-gray-300 hover:text-white">Program & Ekstrakurikuler</Link></li>
               <li><Link to="/kontak" className="text-sm text-gray-300 hover:text-white">Hubungi Kami</Link></li>

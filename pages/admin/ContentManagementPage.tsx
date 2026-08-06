@@ -83,6 +83,64 @@ const ContentManagementPage: React.FC = () => {
       <h1 className="text-3xl font-bold text-gray-800 mb-8">Manajemen Konten Website</h1>
       
       <div className="space-y-8">
+        
+        {/* Visual Settings Section */}
+        <div className="bg-white p-6 rounded-lg shadow-md border-t-4 border-brand-secondary">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Pengaturan Visual & Gambar Utama</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">URL Logo Sekolah (di Navbar)</label>
+              <input type="text" placeholder="https://..." className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" 
+                value={content.logo_url || ''} onChange={(e) => handleContentChange('logo_url', e.target.value)} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">URL Gambar Hero (Banner Depan)</label>
+              <input type="text" placeholder="https://..." className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" 
+                value={content.hero_image_url || ''} onChange={(e) => handleContentChange('hero_image_url', e.target.value)} />
+            </div>
+             <div>
+              <label className="block text-sm font-medium text-gray-700">URL Gambar Sambutan Kepala Sekolah</label>
+              <input type="text" placeholder="https://..." className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue focus:ring-brand-blue sm:text-sm" 
+                value={content.welcome_image_url || ''} onChange={(e) => handleContentChange('welcome_image_url', e.target.value)} />
+            </div>
+            <SaveButton formKeys={['logo_url', 'hero_image_url', 'welcome_image_url']} />
+          </div>
+        </div>
+
+        {/* Public Services Integration Section */}
+        <div className="bg-white p-6 rounded-lg shadow-md border-t-4 border-green-500">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Integrasi Layanan Publik Eksternal</h2>
+          <p className="text-sm text-gray-500 mb-4">Tautan ini akan muncul sebagai kartu (card) di halaman depan (Beranda).</p>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="border p-4 rounded-md">
+              <h3 className="font-semibold mb-3">Layanan Eksternal 1 (Misal: SP4N Lapor)</h3>
+              <div className="space-y-3">
+                <input type="text" placeholder="Nama Layanan" className="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue sm:text-sm" 
+                  value={content.pub_srv_1_name || ''} onChange={(e) => handleContentChange('pub_srv_1_name', e.target.value)} />
+                <input type="text" placeholder="URL Target" className="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue sm:text-sm" 
+                  value={content.pub_srv_1_url || ''} onChange={(e) => handleContentChange('pub_srv_1_url', e.target.value)} />
+                <input type="text" placeholder="URL Logo/Icon" className="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue sm:text-sm" 
+                  value={content.pub_srv_1_logo || ''} onChange={(e) => handleContentChange('pub_srv_1_logo', e.target.value)} />
+              </div>
+            </div>
+            <div className="border p-4 rounded-md">
+              <h3 className="font-semibold mb-3">Layanan Eksternal 2 (Misal: Lapor Bupati)</h3>
+              <div className="space-y-3">
+                <input type="text" placeholder="Nama Layanan" className="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue sm:text-sm" 
+                  value={content.pub_srv_2_name || ''} onChange={(e) => handleContentChange('pub_srv_2_name', e.target.value)} />
+                <input type="text" placeholder="URL Target" className="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue sm:text-sm" 
+                  value={content.pub_srv_2_url || ''} onChange={(e) => handleContentChange('pub_srv_2_url', e.target.value)} />
+                <input type="text" placeholder="URL Logo/Icon" className="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-blue sm:text-sm" 
+                  value={content.pub_srv_2_logo || ''} onChange={(e) => handleContentChange('pub_srv_2_logo', e.target.value)} />
+              </div>
+            </div>
+          </div>
+          <div className="mt-4">
+             <SaveButton formKeys={['pub_srv_1_name', 'pub_srv_1_url', 'pub_srv_1_logo', 'pub_srv_2_name', 'pub_srv_2_url', 'pub_srv_2_logo']} />
+          </div>
+        </div>
+
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Visi & Misi</h2>
           <div className="space-y-4">

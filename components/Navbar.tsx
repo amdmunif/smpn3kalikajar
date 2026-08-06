@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { Menu, X, BookMarked } from 'lucide-react';
 
@@ -14,6 +14,16 @@ const navLinks = [
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState('');
+
+  useEffect(() => {
+    fetch('/api/get_content.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.logo_url) setLogoUrl(data.logo_url);
+      })
+      .catch(err => console.error('Error fetching logo:', err));
+  }, []);
 
   const activeLinkStyle = {
     color: '#FFC107',
@@ -26,7 +36,11 @@ const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-20">
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center space-x-3 text-white">
-              <BookMarked className="h-8 w-8 text-brand-secondary" />
+              {logoUrl ? (
+                <img src={logoUrl} alt="Logo Sekolah" className="h-10 w-auto" />
+              ) : (
+                <BookMarked className="h-8 w-8 text-brand-secondary" />
+              )}
               <div className="flex flex-col">
                 <span className="font-bold text-lg leading-tight">SMPN 3</span>
                 <span className="text-sm leading-tight">Kalikajar</span>
