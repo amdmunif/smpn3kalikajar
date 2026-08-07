@@ -8,6 +8,7 @@ const HomePage: React.FC = () => {
   const [content, setContent] = useState<PageContent>({});
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [headmasterPhoto, setHeadmasterPhoto] = useState<string | null>(null);
+  const [extServices, setExtServices] = useState<any[]>([]);
 
   useEffect(() => {
     // Fetch content
@@ -35,6 +36,12 @@ const HomePage: React.FC = () => {
       .then(res => res.json())
       .then(data => setNews(data))
       .catch(err => console.error('Error fetching news:', err));
+
+    // Fetch external services
+    fetch('/api/external_services.php')
+      .then(res => res.json())
+      .then(data => setExtServices(data))
+      .catch(err => console.error('Error fetching external services:', err));
   }, []);
 
   const heroImageUrl = content.hero_image_url || "https://picsum.photos/seed/hero/1600/900";
@@ -70,7 +77,7 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Public Services External Cards */}
-      {(content.pub_srv_1_name || content.pub_srv_2_name) && (
+      {extServices.length > 0 && (
         <div className="bg-gray-50 border-b border-gray-200">
           <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8">
@@ -78,34 +85,20 @@ const HomePage: React.FC = () => {
               <p className="mt-2 text-gray-600">Portal layanan terpadu yang terhubung dengan pemerintah.</p>
             </div>
             <div className="flex flex-wrap justify-center gap-6">
-              {content.pub_srv_1_name && content.pub_srv_1_url && (
-                <a href={content.pub_srv_1_url} target="_blank" rel="noopener noreferrer" 
+              {extServices.map((srv: any) => (
+                <a key={srv.id} href={srv.url} target="_blank" rel="noopener noreferrer" 
                    className="flex items-center bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100 w-full max-w-sm group">
-                  {content.pub_srv_1_logo ? (
-                    <img src={content.pub_srv_1_logo} alt={content.pub_srv_1_name} className="h-12 w-12 object-contain mr-4" />
+                  {srv.icon_url ? (
+                    <img src={srv.icon_url} alt={srv.name} className="h-12 w-12 object-contain mr-4" />
                   ) : (
                     <ExternalLink className="h-10 w-10 text-brand-blue mr-4" />
                   )}
                   <div>
-                    <h3 className="font-bold text-gray-900 group-hover:text-brand-blue transition-colors">{content.pub_srv_1_name}</h3>
+                    <h3 className="font-bold text-gray-900 group-hover:text-brand-blue transition-colors">{srv.name}</h3>
                     <p className="text-sm text-gray-500">Klik untuk menuju portal</p>
                   </div>
                 </a>
-              )}
-              {content.pub_srv_2_name && content.pub_srv_2_url && (
-                <a href={content.pub_srv_2_url} target="_blank" rel="noopener noreferrer" 
-                   className="flex items-center bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-100 w-full max-w-sm group">
-                  {content.pub_srv_2_logo ? (
-                    <img src={content.pub_srv_2_logo} alt={content.pub_srv_2_name} className="h-12 w-12 object-contain mr-4" />
-                  ) : (
-                    <ExternalLink className="h-10 w-10 text-brand-blue mr-4" />
-                  )}
-                  <div>
-                    <h3 className="font-bold text-gray-900 group-hover:text-brand-blue transition-colors">{content.pub_srv_2_name}</h3>
-                    <p className="text-sm text-gray-500">Klik untuk menuju portal</p>
-                  </div>
-                </a>
-              )}
+              ))}
             </div>
           </div>
         </div>
@@ -121,9 +114,7 @@ const HomePage: React.FC = () => {
             <div className="md:col-span-2">
               <h2 className="text-3xl font-bold text-gray-900">Sambutan Kepala Sekolah</h2>
               <p className="text-lg font-medium text-brand-blue mt-1">{headmasterName}</p>
-              <p className="mt-4 text-gray-600 leading-relaxed whitespace-pre-line">
-                {welcomeMessage}
-              </p>
+              <div className="mt-4 text-gray-600 leading-relaxed max-w-none" dangerouslySetInnerHTML={{ __html: welcomeMessage }} />
             </div>
           </div>
         </div>

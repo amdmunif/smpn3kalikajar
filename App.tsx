@@ -10,6 +10,7 @@ import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import ProgramsPage from './pages/ProgramsPage';
 import NewsPage from './pages/NewsPage';
+import NewsDetailPage from './pages/NewsDetailPage';
 import GalleryPage from './pages/GalleryPage';
 import ContactPage from './pages/ContactPage';
 import PublicServicePage from './pages/PublicServicePage';
@@ -53,6 +54,7 @@ const PublicSiteRoutes = () => (
         <Route path="/profil" element={<ProfilePage />} />
         <Route path="/program" element={<ProgramsPage />} />
         <Route path="/berita" element={<NewsPage />} />
+        <Route path="/berita/:id" element={<NewsDetailPage />} />
         <Route path="/galeri" element={<GalleryPage />} />
         <Route path="/kontak" element={<ContactPage />} />
         <Route path="/layanan" element={<PublicServicePage />} />

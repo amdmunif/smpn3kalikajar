@@ -186,7 +186,7 @@ const ContentManagementPage: React.FC = () => {
       </div>
       
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-64 flex-shrink-0">
+        <div className="w-full md:w-72 flex-shrink-0">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden sticky top-6">
             <nav className="flex flex-col p-2 space-y-1">
               {tabs.map((tab) => {
@@ -196,12 +196,12 @@ const ContentManagementPage: React.FC = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-                      isActive ? 'bg-blue-50 text-brand-blue' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    className={`flex items-center text-left px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                      isActive ? 'bg-blue-50 text-brand-blue ring-1 ring-brand-blue/30' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                     }`}
                   >
-                    <Icon className={`h-5 w-5 mr-3 ${isActive ? 'text-brand-blue' : 'text-gray-400'}`} />
-                    {tab.label}
+                    <Icon className={`h-5 w-5 mr-3 flex-shrink-0 ${isActive ? 'text-brand-blue' : 'text-gray-400'}`} />
+                    <span className="leading-snug">{tab.label}</span>
                   </button>
                 );
               })}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Calendar, ChevronRight } from 'lucide-react';
 
 interface NewsArticle {
   id: number;
@@ -62,16 +63,19 @@ const NewsPage: React.FC = () => {
                         {article.category}
                       </span>
                     </p>
-                    <a href="#" className="block mt-2">
-                      <p className="text-xl font-semibold text-gray-900 hover:text-brand-blue transition-colors line-clamp-2">{article.title}</p>
+                    <Link to={`/berita/${article.id}`} className="block mt-2 group">
+                      <p className="text-xl font-semibold text-gray-900 group-hover:text-brand-blue transition-colors line-clamp-2">{article.title}</p>
                       <p className="mt-3 text-base text-gray-500 line-clamp-3">{article.excerpt}</p>
-                    </a>
+                    </Link>
                   </div>
-                  <div className="mt-6 flex items-center">
+                  <div className="mt-6 flex items-center justify-between">
                     <div className="flex items-center text-sm text-gray-500">
                       <Calendar className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" />
-                      <p>{new Date(article.date).toLocaleDateString('id-ID')}</p>
+                      <p>{new Date(article.date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                     </div>
+                    <Link to={`/berita/${article.id}`} className="text-brand-blue hover:text-brand-lightblue font-medium text-sm flex items-center">
+                      Baca <ChevronRight className="h-4 w-4 ml-1" />
+                    </Link>
                   </div>
                 </div>
               </div>

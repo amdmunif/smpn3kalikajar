@@ -1,7 +1,8 @@
 
-import React from 'react';
-import { SCHOOL_PROFILE, FACILITIES } from '../constants';
-import { Eye, Target, BookOpen, Building } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { PageContent } from '../types';
+import { FACILITIES } from '../constants';
+import { Eye, Target, BookOpen, Building, Loader } from 'lucide-react';
 
 const PageHeader: React.FC<{ title: string; subtitle: string }> = ({ title, subtitle }) => (
   <div className="bg-brand-blue text-white py-16">
@@ -13,6 +14,33 @@ const PageHeader: React.FC<{ title: string; subtitle: string }> = ({ title, subt
 );
 
 const ProfilePage: React.FC = () => {
+  const [content, setContent] = useState<PageContent>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/get_content.php')
+      .then(res => res.json())
+      .then(data => {
+        setContent(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching content:', err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-white min-h-[60vh] flex flex-col items-center justify-center">
+        <Loader className="h-10 w-10 text-brand-blue animate-spin mb-4" />
+        <p className="text-gray-500">Memuat profil sekolah...</p>
+      </div>
+    );
+  }
+
+  const missionList = (content.mission || '').split('\n').filter(m => m.trim().length > 0);
+
   return (
     <div className="bg-white">
       <PageHeader title="Profil Sekolah" subtitle="Mengenal Lebih Dekat SMP Negeri 3 Kalikajar" />
@@ -26,7 +54,7 @@ const ProfilePage: React.FC = () => {
                 <Eye className="h-8 w-8 mr-3" />
                 <h2 className="text-3xl font-bold">Visi Kami</h2>
               </div>
-              <p className="text-xl text-gray-700 italic">"{SCHOOL_PROFILE.vision}"</p>
+              <p className="text-xl text-gray-700 italic">"{content.vision || 'Visi belum ditentukan'}"</p>
             </div>
             <div>
               <div className="flex items-center text-brand-blue mb-4">
@@ -34,12 +62,14 @@ const ProfilePage: React.FC = () => {
                 <h2 className="text-3xl font-bold">Misi Kami</h2>
               </div>
               <ul className="space-y-3 text-gray-600">
-                {SCHOOL_PROFILE.mission.map((item, index) => (
+                {missionList.length > 0 ? missionList.map((item, index) => (
                   <li key={index} className="flex items-start">
                     <span className="text-brand-secondary font-bold mr-3">✔</span>
                     <span>{item}</span>
                   </li>
-                ))}
+                )) : (
+                  <li className="text-gray-500">Misi belum ditentukan</li>
+                )}
               </ul>
             </div>
           </div>
@@ -51,9 +81,9 @@ const ProfilePage: React.FC = () => {
               <BookOpen className="h-8 w-8 mr-3" />
               <h2 className="text-3xl font-bold">Profil & Lingkungan Sekolah</h2>
             </div>
-            <p className="text-gray-600 leading-relaxed text-justify">
-                {SCHOOL_PROFILE.history}
-            </p>
+            <div className="text-gray-600 leading-relaxed text-justify whitespace-pre-wrap">
+                {content.history || 'Sejarah profil belum ditulis.'}
+            </div>
         </section>
 
         {/* Fasilitas Section */}
