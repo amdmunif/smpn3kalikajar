@@ -82,7 +82,7 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8 items-center">
             <div className="md:col-span-1">
-              <img src={welcomeImageUrl} alt={headmasterName} className="rounded-full shadow-lg mx-auto w-48 h-48 md:w-64 md:h-64 object-cover" />
+              <img src={welcomeImageUrl} alt={headmasterName} className="rounded-2xl shadow-lg mx-auto w-48 md:w-64 object-contain bg-gray-50 border border-gray-100" />
             </div>
             <div className="md:col-span-2">
               <h2 className="text-3xl font-bold text-gray-900">Sambutan Kepala Sekolah</h2>
