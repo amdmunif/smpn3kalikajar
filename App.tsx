@@ -14,6 +14,7 @@ import NewsDetailPage from './pages/NewsDetailPage';
 import GalleryPage from './pages/GalleryPage';
 import ContactPage from './pages/ContactPage';
 import PublicServicePage from './pages/PublicServicePage';
+import AcademicPage from './pages/AcademicPage';
 
 // Admin components
 import LoginPage from './pages/admin/LoginPage';
@@ -25,6 +26,7 @@ import NewsManagementPage from './pages/admin/NewsManagementPage';
 import NewsFormPage from './pages/admin/NewsFormPage';
 import GalleryManagementPage from './pages/admin/GalleryManagementPage';
 import PublicServiceManagementPage from './pages/admin/PublicServiceManagementPage';
+import AcademicServiceManagementPage from './pages/admin/AcademicServiceManagementPage';
 import MessageManagementPage from './pages/admin/MessageManagementPage';
 
 const ScrollToTop = () => {
@@ -58,6 +60,7 @@ const PublicSiteRoutes = () => (
         <Route path="/galeri" element={<GalleryPage />} />
         <Route path="/kontak" element={<ContactPage />} />
         <Route path="/layanan" element={<PublicServicePage />} />
+        <Route path="/akademik" element={<AcademicPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </main>
@@ -79,6 +82,7 @@ const AdminRoutes = () => (
             <Route path="/berita/:id" element={<NewsFormPage />} />
             <Route path="/galeri" element={<GalleryManagementPage />} />
             <Route path="/layanan" element={<PublicServiceManagementPage />} />
+            <Route path="/akademik" element={<AcademicServiceManagementPage />} />
             <Route path="/pesan" element={<MessageManagementPage />} />
             {/* Fallback to dashboard for any other admin route */}
             <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />

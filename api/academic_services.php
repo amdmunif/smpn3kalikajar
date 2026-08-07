@@ -7,15 +7,15 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        $sql = "SELECT id, nip, name, position, subject, phone, photo_url FROM teachers ORDER BY id DESC";
+        $sql = "SELECT * FROM academic_services ORDER BY id DESC";
         $result = $conn->query($sql);
-        $teachers = array();
-        if ($result->num_rows > 0) {
+        $services = array();
+        if ($result && $result->num_rows > 0) {
             while($row = $result->fetch_assoc()) {
-                $teachers[] = $row;
+                $services[] = $row;
             }
         }
-        echo json_encode($teachers);
+        echo json_encode($services);
         break;
 
     case 'POST':
@@ -24,11 +24,11 @@ switch ($method) {
         if (isset($data->action) && $data->action === 'delete') {
             if(isset($data->id)) {
                 $id = (int)$data->id;
-                $sql = "DELETE FROM teachers WHERE id=$id";
+                $sql = "DELETE FROM academic_services WHERE id=$id";
                 if ($conn->query($sql) === TRUE) {
-                    echo json_encode(array("success" => true, "message" => "Data guru berhasil dihapus"));
+                    echo json_encode(array("success" => true, "message" => "Layanan akademik berhasil dihapus"));
                 } else {
-                    echo json_encode(array("success" => false, "message" => "Error: " . $conn->error));
+                    echo json_encode(array("success" => false, "message" => "Error DB: " . $conn->error));
                 }
             } else {
                 echo json_encode(array("success" => false, "message" => "ID tidak ditemukan"));
@@ -36,38 +36,35 @@ switch ($method) {
             break;
         }
 
-        if(isset($data->name) && isset($data->position) && isset($data->subject)) {
-            $nip = isset($data->nip) ? $conn->real_escape_string($data->nip) : '';
+        if(isset($data->name) && isset($data->description)) {
             $name = $conn->real_escape_string($data->name);
-            $position = $conn->real_escape_string($data->position);
-            $subject = $conn->real_escape_string($data->subject);
-            $phone = isset($data->phone) ? $conn->real_escape_string($data->phone) : '';
-            $photo_url = isset($data->photo_url) ? $conn->real_escape_string($data->photo_url) : '';
+            $description = $conn->real_escape_string($data->description);
+            $icon_url = isset($data->icon_url) ? $conn->real_escape_string($data->icon_url) : '';
 
             if (isset($data->id) && (int)$data->id > 0) {
                 // Update
                 try {
                     $id = (int)$data->id;
-                    $sql = "UPDATE teachers SET nip='$nip', name='$name', position='$position', subject='$subject', phone='$phone', photo_url='$photo_url' WHERE id=$id";
+                    $sql = "UPDATE academic_services SET name='$name', description='$description', icon_url='$icon_url' WHERE id=$id";
                     if ($conn->query($sql) === TRUE) {
-                        echo json_encode(array("success" => true, "message" => "Data guru berhasil diperbarui", "data" => $data));
+                        echo json_encode(array("success" => true, "message" => "Layanan akademik berhasil diperbarui"));
                     } else {
                         echo json_encode(array("success" => false, "message" => "Error DB: " . $conn->error));
                     }
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     echo json_encode(array("success" => false, "message" => "Error DB: " . $e->getMessage()));
                 }
             } else {
                 // Create
                 try {
-                    $sql = "INSERT INTO teachers (nip, name, position, subject, phone, photo_url) VALUES ('$nip', '$name', '$position', '$subject', '$phone', '$photo_url')";
+                    $sql = "INSERT INTO academic_services (name, description, icon_url) VALUES ('$name', '$description', '$icon_url')";
                     if ($conn->query($sql) === TRUE) {
                         $data->id = $conn->insert_id;
-                        echo json_encode(array("success" => true, "message" => "Guru berhasil ditambahkan", "data" => $data));
+                        echo json_encode(array("success" => true, "message" => "Layanan akademik berhasil ditambahkan", "data" => $data));
                     } else {
                         echo json_encode(array("success" => false, "message" => "Error DB: " . $conn->error));
                     }
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     echo json_encode(array("success" => false, "message" => "Error DB: " . $e->getMessage()));
                 }
             }
@@ -79,11 +76,11 @@ switch ($method) {
     case 'DELETE':
         $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         if($id > 0) {
-            $sql = "DELETE FROM teachers WHERE id=$id";
+            $sql = "DELETE FROM academic_services WHERE id=$id";
             if ($conn->query($sql) === TRUE) {
-                echo json_encode(array("success" => true, "message" => "Data guru berhasil dihapus"));
+                echo json_encode(array("success" => true, "message" => "Layanan akademik berhasil dihapus"));
             } else {
-                echo json_encode(array("success" => false, "message" => "Error: " . $conn->error));
+                echo json_encode(array("success" => false, "message" => "Error DB: " . $conn->error));
             }
         } else {
             echo json_encode(array("success" => false, "message" => "ID tidak ditemukan"));

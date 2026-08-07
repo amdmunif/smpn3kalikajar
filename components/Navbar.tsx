@@ -8,6 +8,7 @@ const navLinks = [
   { name: 'Profil', path: '/profil' },
   { name: 'Program', path: '/program' },
   { name: 'Berita', path: '/berita' },
+  { name: 'Akademik', path: '/akademik' },
   { name: 'Galeri', path: '/galeri' },
   { name: 'Kontak', path: '/kontak' },
 ];
@@ -63,6 +64,7 @@ const Navbar: React.FC = () => {
               <NavLink to="/profil" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} className="text-gray-300 hover:bg-brand-lightblue hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Profil</NavLink>
               <NavLink to="/program" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} className="text-gray-300 hover:bg-brand-lightblue hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Program</NavLink>
               <NavLink to="/berita" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} className="text-gray-300 hover:bg-brand-lightblue hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Berita</NavLink>
+              <NavLink to="/akademik" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} className="text-gray-300 hover:bg-brand-lightblue hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Akademik</NavLink>
               
               <div 
                 className="relative" 
