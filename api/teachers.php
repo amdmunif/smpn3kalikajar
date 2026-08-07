@@ -46,21 +46,29 @@ switch ($method) {
 
             if (isset($data->id)) {
                 // Update
-                $id = (int)$data->id;
-                $sql = "UPDATE teachers SET nip='$nip', name='$name', position='$position', subject='$subject', phone='$phone', photo_url='$photo_url' WHERE id=$id";
-                if ($conn->query($sql) === TRUE) {
-                    echo json_encode(array("success" => true, "message" => "Data guru berhasil diperbarui", "data" => $data));
-                } else {
-                    echo json_encode(array("success" => false, "message" => "Error: " . $conn->error));
+                try {
+                    $id = (int)$data->id;
+                    $sql = "UPDATE teachers SET nip='$nip', name='$name', position='$position', subject='$subject', phone='$phone', photo_url='$photo_url' WHERE id=$id";
+                    if ($conn->query($sql) === TRUE) {
+                        echo json_encode(array("success" => true, "message" => "Data guru berhasil diperbarui", "data" => $data));
+                    } else {
+                        echo json_encode(array("success" => false, "message" => "Error DB: " . $conn->error));
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(array("success" => false, "message" => "Error DB: " . $e->getMessage()));
                 }
             } else {
                 // Create
-                $sql = "INSERT INTO teachers (nip, name, position, subject, phone, photo_url) VALUES ('$nip', '$name', '$position', '$subject', '$phone', '$photo_url')";
-                if ($conn->query($sql) === TRUE) {
-                    $data->id = $conn->insert_id;
-                    echo json_encode(array("success" => true, "message" => "Guru berhasil ditambahkan", "data" => $data));
-                } else {
-                    echo json_encode(array("success" => false, "message" => "Error: " . $conn->error));
+                try {
+                    $sql = "INSERT INTO teachers (nip, name, position, subject, phone, photo_url) VALUES ('$nip', '$name', '$position', '$subject', '$phone', '$photo_url')";
+                    if ($conn->query($sql) === TRUE) {
+                        $data->id = $conn->insert_id;
+                        echo json_encode(array("success" => true, "message" => "Guru berhasil ditambahkan", "data" => $data));
+                    } else {
+                        echo json_encode(array("success" => false, "message" => "Error DB: " . $conn->error));
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(array("success" => false, "message" => "Error DB: " . $e->getMessage()));
                 }
             }
         } else {

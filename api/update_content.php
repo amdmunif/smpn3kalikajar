@@ -12,15 +12,21 @@ if(is_array($data)) {
         $v = $conn->real_escape_string($value);
         
         $sql = "INSERT INTO page_content (section_key, content_value) VALUES ('$k', '$v') ON DUPLICATE KEY UPDATE content_value='$v'";
-        if ($conn->query($sql) !== TRUE) {
+        try {
+            if ($conn->query($sql) !== TRUE) {
+                $success = false;
+                $errorMessage = $conn->error;
+            }
+        } catch (Exception $e) {
             $success = false;
+            $errorMessage = $e->getMessage();
         }
     }
 
     if ($success) {
         echo json_encode(array("success" => true, "message" => "Konten berhasil diperbarui"));
     } else {
-        echo json_encode(array("success" => false, "message" => "Ada kesalahan saat memperbarui konten"));
+        echo json_encode(array("success" => false, "message" => "Kesalahan DB: " . (isset($errorMessage) ? $errorMessage : "Unknown")));
     }
 } else {
     echo json_encode(array("success" => false, "message" => "Data tidak valid"));
