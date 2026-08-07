@@ -4,7 +4,7 @@ import { GraduationCap, ArrowRight, Loader } from 'lucide-react';
 interface AcademicService {
   id: number;
   name: string;
-  description: string;
+  url: string;
   icon_url: string;
 }
 
@@ -75,7 +75,10 @@ const AcademicPage: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map(service => (
-              <div 
+              <a 
+                href={service.url}
+                target="_blank"
+                rel="noopener noreferrer"
                 key={service.id} 
                 className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden group flex flex-col"
               >
@@ -88,14 +91,14 @@ const AcademicPage: React.FC = () => {
                     )}
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-brand-blue transition-colors">{service.name}</h3>
-                  <p className="text-gray-600 leading-relaxed">{service.description}</p>
+                  <p className="text-gray-500 text-sm break-all">{service.url}</p>
                 </div>
                 
                 <div className="px-8 py-4 bg-gray-50 border-t border-gray-100 mt-auto flex items-center text-sm font-semibold text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors cursor-pointer">
                   Masuk Layanan
                   <ArrowRight className="w-4 h-4 ml-2 transform group-hover:translate-x-2 transition-transform" />
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         )}

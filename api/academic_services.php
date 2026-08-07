@@ -12,6 +12,8 @@ switch ($method) {
         $services = array();
         if ($result && $result->num_rows > 0) {
             while($row = $result->fetch_assoc()) {
+                $row['url'] = $row['description'];
+                unset($row['description']);
                 $services[] = $row;
             }
         }
@@ -36,16 +38,16 @@ switch ($method) {
             break;
         }
 
-        if(isset($data->name) && isset($data->description)) {
+        if(isset($data->name) && isset($data->url)) {
             $name = $conn->real_escape_string($data->name);
-            $description = $conn->real_escape_string($data->description);
+            $url = $conn->real_escape_string($data->url);
             $icon_url = isset($data->icon_url) ? $conn->real_escape_string($data->icon_url) : '';
 
             if (isset($data->id) && (int)$data->id > 0) {
                 // Update
                 try {
                     $id = (int)$data->id;
-                    $sql = "UPDATE academic_services SET name='$name', description='$description', icon_url='$icon_url' WHERE id=$id";
+                    $sql = "UPDATE academic_services SET name='$name', description='$url', icon_url='$icon_url' WHERE id=$id";
                     if ($conn->query($sql) === TRUE) {
                         echo json_encode(array("success" => true, "message" => "Layanan akademik berhasil diperbarui"));
                     } else {
@@ -57,7 +59,7 @@ switch ($method) {
             } else {
                 // Create
                 try {
-                    $sql = "INSERT INTO academic_services (name, description, icon_url) VALUES ('$name', '$description', '$icon_url')";
+                    $sql = "INSERT INTO academic_services (name, description, icon_url) VALUES ('$name', '$url', '$icon_url')";
                     if ($conn->query($sql) === TRUE) {
                         $data->id = $conn->insert_id;
                         echo json_encode(array("success" => true, "message" => "Layanan akademik berhasil ditambahkan", "data" => $data));

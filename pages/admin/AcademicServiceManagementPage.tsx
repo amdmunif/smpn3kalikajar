@@ -6,7 +6,7 @@ import Modal from '../../components/ui/Modal';
 interface AcademicService {
   id: number;
   name: string;
-  description: string;
+  url: string;
   icon_url: string;
 }
 
@@ -14,7 +14,7 @@ const AcademicServiceManagementPage: React.FC = () => {
   const [services, setServices] = useState<AcademicService[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<AcademicService | null>(null);
-  const [formData, setFormData] = useState<Omit<AcademicService, 'id'>>({ name: '', description: '', icon_url: '' });
+  const [formData, setFormData] = useState<Omit<AcademicService, 'id'>>({ name: '', url: '', icon_url: '' });
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -35,9 +35,9 @@ const AcademicServiceManagementPage: React.FC = () => {
   const handleOpenModal = (service: AcademicService | null = null) => {
     setSelectedService(service);
     if (service) {
-      setFormData({ name: service.name, description: service.description, icon_url: service.icon_url || '' });
+      setFormData({ name: service.name, url: service.url, icon_url: service.icon_url || '' });
     } else {
-      setFormData({ name: '', description: '', icon_url: '' });
+      setFormData({ name: '', url: '', icon_url: '' });
     }
     setIsUploading(false);
     setIsModalOpen(true);
@@ -138,8 +138,8 @@ const AcademicServiceManagementPage: React.FC = () => {
       className: 'w-1/3'
     },
     { 
-      header: 'Deskripsi', 
-      accessor: (item) => <p className="line-clamp-2 max-w-md" title={item.description}>{item.description}</p> 
+      header: 'Tautan (URL)', 
+      accessor: (item) => <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline max-w-xs truncate block" title={item.url}>{item.url}</a> 
     },
     {
       header: 'Aksi',
@@ -207,14 +207,14 @@ const AcademicServiceManagementPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Deskripsi Singkat</label>
-            <textarea 
-              name="description" 
-              value={formData.description} 
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Tautan / Link Layanan</label>
+            <input 
+              type="url"
+              name="url" 
+              value={formData.url} 
               onChange={handleChange} 
-              rows={4} 
               required 
-              placeholder="Jelaskan secara singkat mengenai layanan ini..." 
+              placeholder="https://..." 
               className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all" 
             />
           </div>
