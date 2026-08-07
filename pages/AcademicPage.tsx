@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { GraduationCap, ArrowRight, Loader, Search } from 'lucide-react';
+import { GraduationCap, ArrowRight, Loader, Search, Clock, Phone } from 'lucide-react';
+import { PageContent } from '../types';
 
 interface AcademicService {
   id: number;
@@ -29,24 +30,25 @@ const PageHeader: React.FC<{ title: string; subtitle: string; searchTerm: string
 
 const AcademicPage: React.FC = () => {
   const [services, setServices] = useState<AcademicService[]>([]);
+  const [content, setContent] = useState<PageContent>({});
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetchServices();
+    Promise.all([
+      fetch('/api/academic_services.php').then(res => res.json()),
+      fetch('/api/get_content.php').then(res => res.json())
+    ])
+      .then(([servicesData, contentData]) => {
+        setServices(servicesData);
+        setContent(contentData);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching data:', err);
+        setLoading(false);
+      });
   }, []);
-
-  const fetchServices = async () => {
-    try {
-      const response = await fetch('/api/academic_services.php');
-      const data = await response.json();
-      setServices(data);
-    } catch (error) {
-      console.error('Error fetching academic services:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -73,7 +75,39 @@ const AcademicPage: React.FC = () => {
 
 
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        {/* Service Info Card */}
+        {(content.service_hours || content.service_contact) && (
+          <div className="bg-white rounded-xl shadow-sm border border-brand-blue/20 p-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            {content.service_hours && (
+              <div className="flex items-start">
+                <div className="bg-blue-50 p-3 rounded-lg mr-4 text-brand-blue">
+                  <Clock className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Jam Buka Layanan</h3>
+                  <div className="text-gray-600 text-sm whitespace-pre-line leading-relaxed">
+                    {content.service_hours}
+                  </div>
+                </div>
+              </div>
+            )}
+            {content.service_contact && (
+              <div className="flex items-start md:border-l border-gray-200 md:pl-8">
+                <div className="bg-green-50 p-3 rounded-lg mr-4 text-green-600">
+                  <Phone className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Narahubung / Kontak</h3>
+                  <div className="text-gray-600 text-sm">
+                    {content.service_contact}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {filteredServices.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
             <GraduationCap className="mx-auto h-16 w-16 text-gray-300" />

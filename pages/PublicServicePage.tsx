@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Search, FileText, ChevronRight, ChevronDown } from 'lucide-react';
+import { Search, FileText, ChevronRight, ChevronDown, Clock, Phone } from 'lucide-react';
+import { PageContent } from '../types';
 
 interface PublicService {
   id: number;
@@ -11,6 +12,7 @@ interface PublicService {
 const PublicServicePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [services, setServices] = useState<PublicService[]>([]);
+  const [content, setContent] = useState<PageContent>({});
   const [loading, setLoading] = useState(true);
   const [expandedServiceId, setExpandedServiceId] = useState<number | null>(null);
 
@@ -19,14 +21,17 @@ const PublicServicePage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetch('/api/services.php')
-      .then(res => res.json())
-      .then(data => {
-        setServices(data);
+    Promise.all([
+      fetch('/api/services.php').then(res => res.json()),
+      fetch('/api/get_content.php').then(res => res.json())
+    ])
+      .then(([servicesData, contentData]) => {
+        setServices(servicesData);
+        setContent(contentData);
         setLoading(false);
       })
       .catch(err => {
-        console.error('Error fetching services:', err);
+        console.error('Error fetching data:', err);
         setLoading(false);
       });
   }, []);
@@ -59,7 +64,39 @@ const PublicServicePage: React.FC = () => {
       </div>
 
       {/* Services List */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        {/* Service Info Card */}
+        {(content.service_hours || content.service_contact) && (
+          <div className="bg-white rounded-xl shadow-sm border border-brand-blue/20 p-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            {content.service_hours && (
+              <div className="flex items-start">
+                <div className="bg-blue-50 p-3 rounded-lg mr-4 text-brand-blue">
+                  <Clock className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Jam Buka Layanan</h3>
+                  <div className="text-gray-600 text-sm whitespace-pre-line leading-relaxed">
+                    {content.service_hours}
+                  </div>
+                </div>
+              </div>
+            )}
+            {content.service_contact && (
+              <div className="flex items-start md:border-l border-gray-200 md:pl-8">
+                <div className="bg-green-50 p-3 rounded-lg mr-4 text-green-600">
+                  <Phone className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Narahubung / Kontak</h3>
+                  <div className="text-gray-600 text-sm">
+                    {content.service_contact}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {loading ? (
            <div className="text-center text-gray-500 py-10">Memuat layanan...</div>
         ) : filteredServices.length === 0 ? (

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { PageContent, ExternalService } from '../../types';
-import { Loader, CheckCircle, Save, Monitor, Link as LinkIcon, Target, History, User, Upload, X, Plus, Trash2, Edit } from 'lucide-react';
+import { Loader, CheckCircle, Save, Monitor, Link as LinkIcon, Target, History, User, Upload, X, Plus, Trash2, Edit, Clock } from 'lucide-react';
 import { Editor } from '@tinymce/tinymce-react';
 
 type SaveStatus = 'idle' | 'saving' | 'success' | 'error';
-type TabId = 'visual' | 'services' | 'vision' | 'history' | 'headmaster';
+type TabId = 'visual' | 'services' | 'service_info' | 'vision' | 'history' | 'headmaster';
 
 const ContentManagementPage: React.FC = () => {
   const [content, setContent] = useState<PageContent>({});
@@ -173,6 +173,7 @@ const ContentManagementPage: React.FC = () => {
   const tabs = [
     { id: 'visual', label: 'Visual & Gambar', icon: Monitor },
     { id: 'services', label: 'Layanan Publik (Eksternal)', icon: LinkIcon },
+    { id: 'service_info', label: 'Info Jam Layanan', icon: Clock },
     { id: 'vision', label: 'Visi & Misi', icon: Target },
     { id: 'history', label: 'Sejarah Profil', icon: History },
     { id: 'headmaster', label: 'Sambutan Kepala Sekolah', icon: User },
@@ -347,6 +348,29 @@ const ContentManagementPage: React.FC = () => {
                     )}
                   </div>
                 )}
+              </div>
+            )}
+
+            {activeTab === 'service_info' && (
+              <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                 <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">Informasi Jam & Kontak Layanan</h2>
+                  <p className="text-gray-500 text-sm mt-1">Informasi ini akan ditampilkan di halaman Layanan Publik dan Layanan Akademik.</p>
+                </div>
+                <div className="space-y-6">
+                  <div>
+                    <label className={labelClassName}>
+                      Jam Buka Layanan
+                      <span className="text-gray-400 font-normal ml-2 text-xs bg-gray-100 px-2 py-1 rounded">Gunakan baris baru untuk memisahkan hari</span>
+                    </label>
+                    <textarea rows={4} className={inputClassName} value={content.service_hours || ''} onChange={(e) => handleContentChange('service_hours', e.target.value)} placeholder="Senin - Kamis: 07.00 - 15.00&#10;Jumat: 07.00 - 11.00" />
+                  </div>
+                  <div className="pt-4 border-t border-gray-100">
+                    <label className={labelClassName}>Kontak / Narahubung Layanan</label>
+                    <input type="text" className={inputClassName} value={content.service_contact || ''} onChange={(e) => handleContentChange('service_contact', e.target.value)} placeholder="Contoh: WhatsApp TU: 0812-3456-7890" />
+                  </div>
+                  <div className="pt-6 flex justify-end"><SaveButton formKeys={['service_hours', 'service_contact']} /></div>
+                </div>
               </div>
             )}
 
