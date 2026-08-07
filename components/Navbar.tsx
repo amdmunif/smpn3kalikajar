@@ -120,6 +120,27 @@ const Navbar: React.FC = () => {
                 {link.name}
               </NavLink>
             ))}
+            <div className="mt-2 pt-2 border-t border-blue-800">
+              <p className="px-3 py-1 text-xs font-semibold text-brand-secondary uppercase tracking-wider">Layanan</p>
+              <NavLink
+                to="/layanan"
+                onClick={() => setIsOpen(false)}
+                className="text-gray-300 hover:bg-brand-lightblue hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors"
+              >
+                Layanan Publik Internal
+              </NavLink>
+              {extServices.map(srv => (
+                <a 
+                  key={srv.id} 
+                  href={srv.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-gray-300 hover:bg-brand-lightblue hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors"
+                >
+                  {srv.name}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       )}
