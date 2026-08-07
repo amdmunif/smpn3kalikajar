@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, FileText, ChevronRight } from 'lucide-react';
+import { Search, FileText, ChevronRight, ChevronDown } from 'lucide-react';
 
 interface PublicService {
   id: number;
@@ -12,6 +12,11 @@ const PublicServicePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [services, setServices] = useState<PublicService[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedServiceId, setExpandedServiceId] = useState<number | null>(null);
+
+  const toggleExpand = (id: number) => {
+    setExpandedServiceId(prev => prev === id ? null : id);
+  };
 
   useEffect(() => {
     fetch('/api/services.php')
@@ -63,28 +68,59 @@ const PublicServicePage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredServices.map((service) => (
-              <div key={service.id} className="bg-white rounded-lg shadow-md p-6 border border-gray-100 hover:shadow-lg hover:border-brand-lightblue transition-all cursor-pointer group">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center">
-                    {service.icon_url ? (
-                      <img src={service.icon_url} alt={service.name} className="h-12 w-12 object-contain mr-4 bg-blue-50 p-2 rounded-lg" />
-                    ) : (
-                      <div className="bg-blue-50 p-3 rounded-lg text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors">
-                        <FileText className="h-6 w-6" />
+            {filteredServices.map((service) => {
+              const isExpanded = expandedServiceId === service.id;
+              return (
+                <div 
+                  key={service.id} 
+                  className={`bg-white rounded-lg shadow-md border ${isExpanded ? 'border-brand-blue ring-1 ring-brand-blue/30' : 'border-gray-100'} hover:shadow-lg transition-all`}
+                >
+                  <div 
+                    className="p-6 cursor-pointer flex items-start justify-between group"
+                    onClick={() => toggleExpand(service.id)}
+                  >
+                    <div className="flex items-center">
+                      {service.icon_url ? (
+                        <img src={service.icon_url} alt={service.name} className="h-12 w-12 object-contain mr-4 bg-blue-50 p-2 rounded-lg flex-shrink-0" />
+                      ) : (
+                        <div className="bg-blue-50 p-3 rounded-lg text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors flex-shrink-0 mr-4">
+                          <FileText className="h-6 w-6" />
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-800 group-hover:text-brand-blue transition-colors leading-tight">
+                          {service.name}
+                        </h3>
+                        {!isExpanded && (
+                          <p className="text-sm text-gray-500 mt-1 line-clamp-1">Lihat detail persyaratan & prosedur...</p>
+                        )}
                       </div>
-                    )}
-                    <h3 className="ml-4 text-lg font-semibold text-gray-800 group-hover:text-brand-blue transition-colors">
-                      {service.name}
-                    </h3>
+                    </div>
+                    <div className="ml-4 mt-2">
+                      {isExpanded ? (
+                        <ChevronDown className="h-5 w-5 text-brand-blue" />
+                      ) : (
+                        <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-brand-blue transition-colors" />
+                      )}
+                    </div>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-brand-blue transition-colors mt-2" />
+                  
+                  {isExpanded && (
+                    <div className="px-6 pb-6 pt-2 border-t border-gray-100 animate-in slide-in-from-top-2 duration-300">
+                      <div className="prose prose-sm prose-blue max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: service.description }} />
+                      <div className="mt-6 flex justify-end">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); toggleExpand(service.id); }}
+                          className="text-sm font-medium text-brand-blue hover:text-brand-lightblue flex items-center"
+                        >
+                          Sembunyikan detail <ChevronDown className="h-4 w-4 ml-1 transform rotate-180" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="mt-4 text-sm text-gray-500 line-clamp-2">
-                  {service.description || `Klik untuk melihat detail persyaratan, alur, dan formulir pengajuan untuk ${service.name}.`}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

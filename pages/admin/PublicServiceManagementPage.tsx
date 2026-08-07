@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Briefcase, Upload, X, Loader } from 'lucide-react';
+import { Editor } from '@tinymce/tinymce-react';
 import DataTable, { Column } from '../../components/ui/DataTable';
 import Modal from '../../components/ui/Modal';
 
@@ -139,7 +140,7 @@ const PublicServiceManagementPage: React.FC = () => {
     },
     { 
       header: 'Deskripsi', 
-      accessor: (item) => <p className="line-clamp-2 max-w-md" title={item.description}>{item.description}</p> 
+      accessor: (item) => <div className="line-clamp-2 max-w-md text-sm" dangerouslySetInnerHTML={{ __html: item.description }} /> 
     },
     {
       header: 'Aksi',
@@ -208,15 +209,21 @@ const PublicServiceManagementPage: React.FC = () => {
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Deskripsi Singkat</label>
-            <textarea 
-              name="description" 
-              value={formData.description} 
-              onChange={handleChange} 
-              rows={4} 
-              required 
-              placeholder="Syarat dan ketentuan layanan..." 
-              className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all" 
-            />
+            <div className="border border-gray-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-brand-blue/50 focus-within:border-brand-blue transition-all">
+              <Editor
+                apiKey="a6av81tpfj54ylxetjioaunho1ja53ana1c28l9jndbsbql3"
+                value={formData.description || ''}
+                onEditorChange={(newContent) => setFormData(prev => ({ ...prev, description: newContent }))}
+                init={{
+                  height: 300,
+                  menubar: false,
+                  plugins: ['link', 'lists', 'wordcount'],
+                  toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | removeformat',
+                  content_style: 'body { font-family:Inter,sans-serif; font-size:14px; line-height: 1.6 }',
+                  placeholder: "Ketik detail persyaratan, prosedur, waktu, dll..."
+                }}
+              />
+            </div>
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Ikon / Gambar <span className="text-gray-400 font-normal">(Opsional)</span></label>
