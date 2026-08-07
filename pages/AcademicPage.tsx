@@ -53,24 +53,14 @@ const AcademicPage: React.FC = () => {
         subtitle="Berbagai layanan seputar kegiatan belajar mengajar dan kesiswaan untuk memfasilitasi kebutuhan siswa dan wali murid." 
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 -mb-12">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-12 flex flex-col md:flex-row items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-              <GraduationCap className="h-6 w-6 text-brand-blue mr-2" />
-              Portal Akademik Terpadu
-            </h2>
-            <p className="text-gray-600 mt-1">Pilih layanan akademik yang Anda butuhkan dari daftar di bawah ini.</p>
-          </div>
-        </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
         {services.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-100">
-            <GraduationCap className="mx-auto h-12 w-12 text-gray-300" />
-            <h3 className="mt-4 text-lg font-medium text-gray-900">Belum ada layanan akademik</h3>
-            <p className="mt-1 text-gray-500">Daftar layanan akademik belum ditambahkan oleh administrator.</p>
+          <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
+            <GraduationCap className="mx-auto h-16 w-16 text-gray-300" />
+            <h3 className="mt-4 text-xl font-bold text-gray-900">Belum ada layanan akademik</h3>
+            <p className="mt-2 text-gray-500">Daftar layanan akademik belum ditambahkan oleh administrator.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
