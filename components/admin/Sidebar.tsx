@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, FileText, Image as ImageIcon, Briefcase, Mail, X, GraduationCap } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, Image as ImageIcon, Briefcase, Mail, X, GraduationCap, Building } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface SidebarProps {
@@ -12,6 +12,7 @@ const allNavLinks = [
   { icon: LayoutDashboard, name: 'Dashboard', path: '/admin/dashboard', roles: ['admin', 'guru'] },
   { icon: FileText, name: 'Konten Profil', path: '/admin/content', roles: ['admin'] },
   { icon: Users, name: 'Data Guru', path: '/admin/guru', roles: ['admin'] },
+  { icon: Building, name: 'Fasilitas', path: '/admin/fasilitas', roles: ['admin'] },
   { icon: FileText, name: 'Berita & Pengumuman', path: '/admin/berita', roles: ['admin', 'guru'] },
   { icon: ImageIcon, name: 'Galeri Sekolah', path: '/admin/galeri', roles: ['admin', 'guru'] },
   { icon: Briefcase, name: 'Layanan Publik', path: '/admin/layanan', roles: ['admin'] },

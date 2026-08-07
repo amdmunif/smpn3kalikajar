@@ -25,6 +25,7 @@ import TeacherManagementPage from './pages/admin/TeacherManagementPage';
 import NewsManagementPage from './pages/admin/NewsManagementPage';
 import NewsFormPage from './pages/admin/NewsFormPage';
 import GalleryManagementPage from './pages/admin/GalleryManagementPage';
+import FacilityManagementPage from './pages/admin/FacilityManagementPage';
 import PublicServiceManagementPage from './pages/admin/PublicServiceManagementPage';
 import AcademicServiceManagementPage from './pages/admin/AcademicServiceManagementPage';
 import MessageManagementPage from './pages/admin/MessageManagementPage';
@@ -81,6 +82,7 @@ const AdminRoutes = () => (
             <Route path="/berita" element={<NewsManagementPage />} />
             <Route path="/berita/:id" element={<NewsFormPage />} />
             <Route path="/galeri" element={<GalleryManagementPage />} />
+            <Route path="/fasilitas" element={<FacilityManagementPage />} />
             <Route path="/layanan" element={<PublicServiceManagementPage />} />
             <Route path="/akademik" element={<AcademicServiceManagementPage />} />
             <Route path="/pesan" element={<MessageManagementPage />} />

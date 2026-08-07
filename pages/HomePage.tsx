@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { NEWS_ARTICLES, FACILITIES } from '../constants';
+import { Link } from 'react-router-dom';
 import { Calendar, ChevronRight, Building, ExternalLink } from 'lucide-react';
 import { NewsArticle, PageContent } from '../types';
 
@@ -9,6 +9,7 @@ const HomePage: React.FC = () => {
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [headmasterPhoto, setHeadmasterPhoto] = useState<string | null>(null);
   const [extServices, setExtServices] = useState<any[]>([]);
+  const [facilities, setFacilities] = useState<any[]>([]);
 
   useEffect(() => {
     // Fetch content
@@ -42,6 +43,12 @@ const HomePage: React.FC = () => {
       .then(res => res.json())
       .then(data => setExtServices(data))
       .catch(err => console.error('Error fetching external services:', err));
+
+    // Fetch facilities
+    fetch('/api/facilities.php')
+      .then(res => res.json())
+      .then(data => setFacilities(data))
+      .catch(err => console.error('Error fetching facilities:', err));
   }, []);
 
   const heroImageUrl = content.hero_image_url || "https://picsum.photos/seed/hero/1600/900";
@@ -212,14 +219,23 @@ const HomePage: React.FC = () => {
             <p className="mt-4 text-lg text-gray-600">Menunjang proses belajar mengajar yang kondusif dan modern.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 text-center">
-              {FACILITIES.slice(0,4).map(facility => (
-                  <div key={facility.id} className="flex flex-col items-center space-y-3">
-                      <div className="p-4 bg-blue-100 rounded-full">
-                           <Building className="h-8 w-8 text-brand-blue"/>
-                      </div>
+              {facilities.slice(0,4).map((facility: any) => (
+                  <div key={facility.id} className="flex flex-col items-center space-y-3 group">
+                      {facility.image_url ? (
+                        <div className="h-20 w-20 rounded-full overflow-hidden border-4 border-blue-50 shadow-sm group-hover:scale-105 transition-transform">
+                          <img src={facility.image_url} alt={facility.name} className="h-full w-full object-cover" />
+                        </div>
+                      ) : (
+                        <div className="p-5 bg-blue-100 rounded-full text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors">
+                             <Building className="h-8 w-8"/>
+                        </div>
+                      )}
                       <p className="font-semibold text-gray-800">{facility.name}</p>
                   </div>
               ))}
+              {facilities.length === 0 && (
+                <div className="col-span-full py-8 text-gray-500">Belum ada fasilitas.</div>
+              )}
           </div>
            <div className="mt-10 text-center">
               <Link to="/profil" className="inline-flex items-center text-brand-blue hover:text-brand-lightblue font-semibold">

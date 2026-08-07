@@ -1,8 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
-import { PageContent } from '../types';
-import { FACILITIES } from '../constants';
 import { Eye, Target, BookOpen, Building, Loader } from 'lucide-react';
+import { PageContent } from '../types';
 
 const PageHeader: React.FC<{ title: string; subtitle: string }> = ({ title, subtitle }) => (
   <div className="bg-brand-blue text-white py-16">
@@ -15,17 +13,21 @@ const PageHeader: React.FC<{ title: string; subtitle: string }> = ({ title, subt
 
 const ProfilePage: React.FC = () => {
   const [content, setContent] = useState<PageContent>({});
+  const [facilities, setFacilities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/get_content.php')
-      .then(res => res.json())
-      .then(data => {
-        setContent(data);
+    Promise.all([
+      fetch('/api/get_content.php').then(res => res.json()),
+      fetch('/api/facilities.php').then(res => res.json())
+    ])
+      .then(([contentData, facilitiesData]) => {
+        setContent(contentData);
+        setFacilities(facilitiesData);
         setLoading(false);
       })
       .catch(err => {
-        console.error('Error fetching content:', err);
+        console.error('Error fetching data:', err);
         setLoading(false);
       });
   }, []);
@@ -92,16 +94,29 @@ const ProfilePage: React.FC = () => {
               <Building className="h-10 w-10 mr-4" />
               <h2 className="text-3xl font-bold text-center">Fasilitas Sekolah</h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {FACILITIES.map(facility => (
-                    <div key={facility.id} className="bg-white rounded-lg shadow-md overflow-hidden group">
-                        <img src={facility.imageUrl} alt={facility.name} className="w-full h-56 object-cover transform group-hover:scale-105 transition-transform duration-300"/>
-                        <div className="p-6">
-                            <h3 className="text-xl font-semibold text-gray-900">{facility.name}</h3>
-                            <p className="mt-2 text-gray-600">{facility.description}</p>
-                        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {facilities.map((facility) => (
+                <div key={facility.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow border border-gray-100 group">
+                  {facility.image_url ? (
+                    <div className="h-48 overflow-hidden">
+                      <img src={facility.image_url} alt={facility.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     </div>
-                ))}
+                  ) : (
+                    <div className="h-48 bg-gray-100 flex items-center justify-center">
+                      <Building className="h-12 w-12 text-gray-300" />
+                    </div>
+                  )}
+                  <div className="p-5">
+                    <h3 className="font-bold text-gray-900 text-lg">{facility.name}</h3>
+                    {facility.description && (
+                       <p className="text-gray-600 text-sm mt-2 line-clamp-3">{facility.description}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {facilities.length === 0 && (
+                <div className="col-span-full py-8 text-center text-gray-500">Belum ada fasilitas yang ditambahkan.</div>
+              )}
             </div>
         </section>
       </div>
