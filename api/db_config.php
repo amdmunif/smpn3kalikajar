@@ -9,6 +9,8 @@ $username = "root";
 $password = "";
 $database = "spentika";
 
+mysqli_report(MYSQLI_REPORT_OFF);
+
 // Create database connection
 $conn = new mysqli($host, $username, $password, $database);
 

@@ -17,7 +17,7 @@ if(is_array($data)) {
                 $success = false;
                 $errorMessage = $conn->error;
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $success = false;
             $errorMessage = $e->getMessage();
         }

@@ -18,7 +18,10 @@ if (!isset($_FILES['file'])) {
 }
 
 $file = $_FILES['file'];
-$uploadDir = '../public/uploads/';
+
+// Auto-detect if we are in local dev (Vite) or production (cPanel)
+$isDev = file_exists(__DIR__ . '/../package.json');
+$uploadDir = $isDev ? __DIR__ . '/../public/uploads/' : __DIR__ . '/../uploads/';
 
 // Create directory if it doesn't exist
 if (!is_dir($uploadDir)) {
@@ -32,7 +35,7 @@ $destination = $uploadDir . $filename;
 
 // Optional flag to overwrite favicon
 if (isset($_POST['is_favicon']) && $_POST['is_favicon'] === 'true') {
-    $destination = '../public/favicon.ico';
+    $destination = $isDev ? __DIR__ . '/../public/favicon.ico' : __DIR__ . '/../favicon.ico';
     $filename = 'favicon.ico';
 }
 
