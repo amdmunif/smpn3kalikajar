@@ -38,9 +38,10 @@ switch ($method) {
             break;
         }
 
-        if(isset($data->name) && isset($data->url)) {
+        if(isset($data->name) && (isset($data->url) || isset($data->description))) {
             $name = $conn->real_escape_string($data->name);
-            $url = $conn->real_escape_string($data->url);
+            $url_val = isset($data->url) ? $data->url : $data->description;
+            $url = $conn->real_escape_string($url_val);
             $icon_url = isset($data->icon_url) ? $conn->real_escape_string($data->icon_url) : '';
 
             if (isset($data->id) && (int)$data->id > 0) {
