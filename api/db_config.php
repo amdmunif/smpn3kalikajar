@@ -16,7 +16,9 @@ $conn = new mysqli($host, $username, $password, $database);
 
 // Check connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    header('Content-Type: application/json');
+    echo json_encode(array("success" => false, "message" => "Koneksi Database Gagal: Periksa pengaturan username/password di db_config.php. Detail: " . $conn->connect_error));
+    exit();
 }
 
 // Set charset to utf8mb4

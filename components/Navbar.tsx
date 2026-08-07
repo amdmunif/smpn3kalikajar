@@ -15,14 +15,16 @@ const navLinks = [
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState('');
+  const [schoolName, setSchoolName] = useState('');
 
   useEffect(() => {
     fetch('/api/get_content.php')
       .then(res => res.json())
       .then(data => {
         if (data.logo_url) setLogoUrl(data.logo_url);
+        if (data.school_name) setSchoolName(data.school_name);
       })
-      .catch(err => console.error('Error fetching logo:', err));
+      .catch(err => console.error('Error fetching content:', err));
   }, []);
 
   const activeLinkStyle = {
@@ -41,9 +43,10 @@ const Navbar: React.FC = () => {
               ) : (
                 <BookMarked className="h-8 w-8 text-brand-secondary" />
               )}
-              <div className="flex flex-col">
-                <span className="font-bold text-lg leading-tight">SMPN 3</span>
-                <span className="text-sm leading-tight">Kalikajar</span>
+              <div className="flex flex-col max-w-[200px] sm:max-w-[300px]">
+                <span className="font-bold text-lg leading-tight truncate" title={schoolName || 'SMPN 3 Kalikajar'}>
+                  {schoolName || 'SMPN 3 Kalikajar'}
+                </span>
               </div>
             </Link>
           </div>

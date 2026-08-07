@@ -91,6 +91,17 @@ const AdminRoutes = () => (
 
 
 const App: React.FC = () => {
+  useEffect(() => {
+    fetch('/api/get_content.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.school_name) {
+          document.title = data.school_name;
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   return (
     <AuthProvider>
       <BrowserRouter>

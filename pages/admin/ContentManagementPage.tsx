@@ -216,10 +216,15 @@ const ContentManagementPage: React.FC = () => {
               <div className="animate-in fade-in slide-in-from-right-4 duration-300">
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-gray-900">Visual & Gambar Utama</h2>
-                  <p className="text-gray-500 text-sm mt-1">Atur logo dan banner utama yang tampil di beranda website.</p>
+                  <p className="text-gray-500 text-sm mt-1">Atur nama sekolah, logo dan banner utama yang tampil di beranda website.</p>
                 </div>
                 <div className="space-y-8">
                   <div>
+                    <label className={labelClassName}>Nama Sekolah</label>
+                    <input type="text" className={inputClassName} value={content.school_name || ''} onChange={(e) => handleContentChange('school_name', e.target.value)} placeholder="Contoh: SMP Negeri 3 Kalikajar" />
+                  </div>
+
+                  <div className="pt-6 border-t border-gray-100">
                     <label className={labelClassName}>Logo Sekolah & Favicon</label>
                     <div className="mt-2 flex items-center space-x-6">
                       <div className="h-24 w-24 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center p-2">
@@ -264,7 +269,7 @@ const ContentManagementPage: React.FC = () => {
                   </div>
                   
                   <div className="pt-6 flex justify-end border-t border-gray-100">
-                    <SaveButton formKeys={['logo_url', 'hero_image_url']} />
+                    <SaveButton formKeys={['school_name', 'logo_url', 'hero_image_url']} />
                   </div>
                 </div>
               </div>

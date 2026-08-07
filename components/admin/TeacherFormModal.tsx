@@ -105,16 +105,21 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({ isOpen, onClose, on
           
           <div>
             <label htmlFor="position" className="block text-sm font-semibold text-gray-700 mb-1">Jabatan</label>
-            <input 
-              type="text" 
+            <select 
               name="position" 
               id="position" 
               value={formData.position} 
               onChange={handleChange} 
               required 
               className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all" 
-              placeholder="Contoh: Kepala Sekolah / Guru"
-            />
+            >
+              <option value="" disabled>Pilih Jabatan</option>
+              <option value="Kepala Sekolah">Kepala Sekolah</option>
+              <option value="Wakil Kepala Sekolah">Wakil Kepala Sekolah</option>
+              <option value="Guru">Guru</option>
+              <option value="Kepala Tata Usaha">Kepala Tata Usaha</option>
+              <option value="Staff Tata Usaha">Staff Tata Usaha</option>
+            </select>
           </div>
           <div>
             <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 mb-1">Guru Mata Pelajaran</label>
@@ -131,16 +136,15 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({ isOpen, onClose, on
           </div>
           
           <div>
-            <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-1">Nomor Telepon</label>
+            <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-1">Nomor Telepon <span className="text-gray-400 font-normal">(Opsional)</span></label>
             <input 
               type="tel" 
               name="phone" 
               id="phone" 
               value={formData.phone} 
               onChange={handleChange} 
-              required 
               className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/50 focus:border-brand-blue transition-all" 
-              placeholder="08123456789"
+              placeholder="Kosongkan jika tidak ada"
             />
           </div>
         </div>
