@@ -153,8 +153,8 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({ isOpen, onClose, on
           <label className="block text-sm font-semibold text-gray-700 mb-1">Foto <span className="text-gray-400 font-normal">(Opsional)</span></label>
           <div className="mt-1 flex items-center space-x-4">
             {formData.photo_url ? (
-              <div className="relative h-20 w-20 rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-                <img src={formData.photo_url} alt="Preview" className="h-full w-full object-cover" />
+              <div className="relative h-24 w-20 rounded-lg overflow-hidden border border-gray-200 shadow-sm bg-gray-50">
+                <img src={formData.photo_url} alt="Preview" className="h-full w-full object-contain" />
                 <button
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, photo_url: '' }))}
@@ -164,7 +164,7 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({ isOpen, onClose, on
                 </button>
               </div>
             ) : (
-              <div className="h-20 w-20 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 text-gray-400">
+              <div className="h-24 w-20 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 text-gray-400">
                 <Upload className="h-6 w-6" />
               </div>
             )}
@@ -185,7 +185,7 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({ isOpen, onClose, on
                 {isUploading ? <Loader className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
                 {isUploading ? 'Mengunggah...' : 'Pilih Foto'}
               </button>
-              <p className="text-xs text-gray-500 mt-2">Gunakan format JPG/PNG, ukuran ideal persegi (1:1).</p>
+              <p className="text-xs text-gray-500 mt-2">Gunakan format JPG/PNG, direkomendasikan ukuran pas foto (3x4).</p>
             </div>
           </div>
         </div>

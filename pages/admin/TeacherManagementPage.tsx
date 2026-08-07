@@ -88,9 +88,9 @@ const TeacherManagementPage: React.FC = () => {
     {
       header: 'Foto',
       accessor: (teacher) => teacher.photo_url ? (
-        <img src={teacher.photo_url} alt={teacher.name} className="h-10 w-10 rounded-full object-cover shadow-sm border border-gray-100" />
+        <img src={teacher.photo_url} alt={teacher.name} className="h-12 w-10 rounded shadow-sm border border-gray-100 object-contain bg-gray-50" />
       ) : (
-        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-brand-blue font-bold shadow-sm">
+        <div className="h-12 w-10 rounded bg-blue-100 flex items-center justify-center text-brand-blue font-bold shadow-sm">
           {teacher.name.charAt(0)}
         </div>
       ),
