@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Menu, X, BookMarked } from 'lucide-react';
+import { Menu, X, BookMarked, ChevronDown } from 'lucide-react';
 
 const navLinks = [
   { name: 'Beranda', path: '/' },
@@ -14,8 +14,10 @@ const navLinks = [
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLayananOpen, setIsLayananOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState('');
   const [schoolName, setSchoolName] = useState('');
+  const [extServices, setExtServices] = useState<any[]>([]);
 
   useEffect(() => {
     fetch('/api/get_content.php')
@@ -25,6 +27,11 @@ const Navbar: React.FC = () => {
         if (data.school_name) setSchoolName(data.school_name);
       })
       .catch(err => console.error('Error fetching content:', err));
+
+    fetch('/api/external_services.php')
+      .then(res => res.json())
+      .then(data => setExtServices(data))
+      .catch(err => console.error('Error fetching ext services:', err));
   }, []);
 
   const activeLinkStyle = {
@@ -52,17 +59,36 @@ const Navbar: React.FC = () => {
           </div>
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
-              {navLinks.map((link) => (
-                <NavLink
-                  key={link.name}
-                  to={link.path}
-                  end
-                  style={({ isActive }) => (isActive ? activeLinkStyle : undefined)}
-                  className="text-gray-300 hover:bg-brand-lightblue hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  {link.name}
-                </NavLink>
-              ))}
+              <NavLink to="/" end style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} className="text-gray-300 hover:bg-brand-lightblue hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Beranda</NavLink>
+              <NavLink to="/profil" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} className="text-gray-300 hover:bg-brand-lightblue hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Profil</NavLink>
+              <NavLink to="/program" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} className="text-gray-300 hover:bg-brand-lightblue hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Program</NavLink>
+              <NavLink to="/berita" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} className="text-gray-300 hover:bg-brand-lightblue hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Berita</NavLink>
+              
+              <div 
+                className="relative" 
+                onMouseEnter={() => setIsLayananOpen(true)} 
+                onMouseLeave={() => setIsLayananOpen(false)}
+              >
+                <button className={`text-gray-300 hover:bg-brand-lightblue hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center ${isLayananOpen ? 'bg-brand-lightblue text-white' : ''}`}>
+                  Layanan <ChevronDown className="h-4 w-4 ml-1" />
+                </button>
+                {isLayananOpen && (
+                  <div className="absolute left-0 mt-0 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 overflow-hidden">
+                    <div className="py-1">
+                      <Link to="/layanan" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-brand-blue font-medium">Layanan Publik Internal</Link>
+                      {extServices.length > 0 && <div className="border-t border-gray-100 my-1"></div>}
+                      {extServices.map(srv => (
+                        <a key={srv.id} href={srv.url} target="_blank" rel="noopener noreferrer" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-brand-blue">
+                          {srv.name}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <NavLink to="/galeri" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} className="text-gray-300 hover:bg-brand-lightblue hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Galeri</NavLink>
+              <NavLink to="/kontak" style={({ isActive }) => (isActive ? activeLinkStyle : undefined)} className="text-gray-300 hover:bg-brand-lightblue hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Kontak</NavLink>
             </div>
           </div>
           <div className="md:hidden flex items-center">
