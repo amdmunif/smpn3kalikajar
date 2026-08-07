@@ -2,6 +2,8 @@
 require 'db_config.php';
 
 header('Content-Type: application/json');
+ini_set('display_errors', 0);
+error_reporting(0);
 
 $data = json_decode(file_get_contents("php://input"), true);
 
